@@ -7,6 +7,9 @@ info:
     url: https://aaron-burke.me
     email: aaron@focuszonedevelopment.com
   version: 1.0.0
+  license:
+    name: Unlicense
+    url: https://unlicense.org/
 servers:
 - url: /drop-token
 paths:
