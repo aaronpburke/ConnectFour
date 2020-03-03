@@ -1,0 +1,278 @@
+openapi: 3.0.1
+info:
+  title: 98Point6 Drop-Token
+  description: At-home interview implementation of "98Point6 Drop-Token" homework assignment
+  contact:
+    name: Aaron Burke
+    url: https://aaron-burke.me
+    email: aaron@focuszonedevelopment.com
+  version: 1.0.0
+servers:
+- url: /drop-token
+paths:
+  /:
+    get:
+      tags:
+      - Game Management
+      summary: Get all in-progress games.
+      operationId: GetAllGames
+      responses:
+        200:
+          description: Returns all in-progress games.
+          content:
+            text/json:
+              schema:
+                type: object
+                properties:
+                  games:
+                    type: array
+                    items:
+                      type: string
+              example: ["gameid1", "gameid2"]
+    post:
+      tags: 
+      - Game Management
+      summary: Start a new game
+      requestBody:
+        description: Game configuration, e.g., player names, board size
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewGameDetails'
+      responses:
+        200:
+          description: Returns the new game resource.
+          content:
+            text/json:
+              schema:
+                type: object
+                properties:
+                  gameId:
+                    type: string
+        400:
+          description: Malformed request.
+  /{gameId}:
+    get:
+      tags:
+      - Game Management
+      summary: Get the state of a game.
+      operationId: GetGame
+      parameters:
+      - name: gameId
+        description: ID of the game to get the state of
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Returns the specified game state.
+          content: 
+            text/json:
+              schema:
+                type: string
+                items:
+                  $ref: '#/components/schemas/GameState'
+        400:
+          description: Malformed request.
+        404:
+          description: Game not found.
+  /{gameId}/moves:
+    get:
+      tags:
+      - Game Actions
+      summary: Get a (sub-)list of the moves played.
+      operationId: GetMoves
+      parameters:
+      - name: gameId
+        description: ID of the game to get moves from
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: start
+        description: Starting move to return (inclusive)
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: until
+        description: Ending move to return (inclusive)
+        in: query
+        schema:
+          type: integer
+          format: int32
+      responses:
+        200:
+          description: Returns the requested game moves.
+          content:
+            text/json:
+              schema:
+                type: object
+                properties:
+                  moves:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/GameMove'
+        400:
+          description: Malformed request.
+        404:
+          description: Game/moves not found
+  /{gameId}/moves/{moveNumber}:
+    get:
+      tags:
+      - Game Actions
+      summary: Get a previously played move.
+      operationId: GetMove
+      parameters:
+      - name: gameId
+        description: ID of the game to get move from
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: moveNumber
+        description: Move sequence number to get
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Returns the requested game move.
+          content:
+            text/json:
+              schema:
+                $ref: '#/components/schemas/GameMove'
+        400:
+          description: Malformed request.
+        404:
+          description: Game/move not found
+  /{gameId}/moves/{playerId}:
+    post:
+      tags:
+      - Game Actions
+      summary: Play a new move.
+      operationId: PlayMove
+      parameters:
+      - name: gameId
+        description: ID of the game to play move on
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: playerId
+        description: Name of the player playing the move
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Returns the new move.
+          content:
+            text/json:
+              schema:
+                type: object
+                properties:
+                  moves:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/GameMove'
+        400:
+          description: Malformed input. Illegal move.
+        404:
+          description: Game not found or player is not a part of it.
+        409:
+          description: Player tried to act when it's not their turn.
+  /{gameId}/{playerId}:
+    delete:
+      tags:
+        - Game Actions
+      summary: Quit player from the game.
+      operationId: PlayerQuit
+      parameters:
+      - name: gameId
+        description: ID of the game to quit
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: playerId
+        description: Name of the player quitting the game
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        202:
+          description: Player quit.
+        404:
+          description: Game not found or player is not a part of it.
+        410:
+          description: Game is already in DONE state.
+components:
+  schemas:
+    NewGameDetails:
+      type: object
+      description: Details of a new game
+      properties:
+        players:
+          description: Player names
+          type: array
+          items:
+            type: string
+          example: ["player1", "player2"]
+          default: ["player1", "player2"]
+        columns:
+          description: Number of columns on the board
+          type: number
+          format: int32
+          minimum: 1
+          example: 4
+          default: 4
+        rows:
+          description: Number of rows on the board
+          type: number
+          format: int32
+          minimum: 1
+          example: 4
+          default: 4
+      required: [players, columns, rows]
+    GameState:
+      type: object
+      description: Details of a game in progress
+      properties:
+        players:
+          description: Player names
+          type: array
+          items:
+            type: string
+          example: ["player1", "player2"]
+          default: ["player1", "player2"]
+        state:
+          type: string
+          enum: [IN_PROGRESS, DONE]
+          example: IN_PROGRESS
+          default: IN_PROGRESS
+        winner:
+          type: string
+      required: [players, state]
+    GameMove:
+      type: object
+      description: A single move within a game
+      properties:
+        type:
+          type: string
+          enum: [MOVE, QUIT]
+          example: MOVE
+          default: MOVE
+        player:
+          type: string
+        column:
+          type: number
+          format: int32
+          minimum: 1
+          example: 1
+      required: [type, player]
