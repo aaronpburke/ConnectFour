@@ -181,12 +181,7 @@ paths:
           content:
             text/json:
               schema:
-                type: object
-                properties:
-                  moves:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/GameMove'
+                $ref: '#/components/schemas/GameMove'
         400:
           description: Malformed input. Illegal move.
         404:
