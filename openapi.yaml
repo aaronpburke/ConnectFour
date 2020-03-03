@@ -36,6 +36,7 @@ paths:
       tags: 
       - Game Management
       summary: Start a new game
+      operationId: StartNewGame
       requestBody:
         description: Game configuration, e.g., player names, board size
         required: true
@@ -53,6 +54,9 @@ paths:
                 properties:
                   gameId:
                     type: string
+          links:
+            GetGameById:
+              $ref: '#/components/links/GetGameByGameId'
         400:
           description: Malformed request.
   /{gameId}:
@@ -279,3 +283,11 @@ components:
           minimum: 1
           example: 1
       required: [type, player]
+  links:
+    GetGameByGameId:
+      description: >
+        The `gameId` value returned in the response can be used as
+        the `gameId` parameter in `GET /drop_token/{gameId}`.
+      operationId: GetGame
+      parameters:
+        gameId: '$response.body#/gameId'
