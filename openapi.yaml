@@ -71,9 +71,7 @@ paths:
           content: 
             text/json:
               schema:
-                type: string
-                items:
-                  $ref: '#/components/schemas/GameState'
+                $ref: '#/components/schemas/GameState'
         400:
           description: Malformed request.
         404:
@@ -257,7 +255,10 @@ components:
           example: IN_PROGRESS
           default: IN_PROGRESS
         winner:
+          description: Winning player name, if game is complete
           type: string
+          nullable: true
+          example: player1
       required: [players, state]
     GameMove:
       type: object
@@ -269,7 +270,9 @@ components:
           example: MOVE
           default: MOVE
         player:
+          description: Player name who made the move
           type: string
+          example: player1
         column:
           type: number
           format: int32
