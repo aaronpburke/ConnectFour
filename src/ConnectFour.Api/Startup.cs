@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json.Serialization;
 
@@ -114,6 +115,17 @@ namespace ConnectFour.Api
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app
+                .UseSwagger()
+                .UseSwaggerUI(c =>
+                {
+                    //TODO: Either use the SwaggerGen generated Swagger contract (generated from C# classes)
+                    c.SwaggerEndpoint("/swagger/1.0.0/swagger.json", "98Point6 Drop-Token");
+
+                    //TODO: Or alternatively use the original Swagger contract that's included in the static files
+                    // c.SwaggerEndpoint("/swagger-original.json", "98Point6 Drop-Token Original");
+                });
 
             app.UseEndpoints(endpoints =>
             {
