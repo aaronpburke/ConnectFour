@@ -78,7 +78,7 @@ namespace ConnectFour.Api
                     {
                         Version = "1.0.0",
                         Title = "98Point6 Drop-Token",
-                        Description = "98Point6 Drop-Token (ASP.NET Core 3.0)",
+                        Description = "98Point6 Drop-Token (ASP.NET Core 3.1)",
                         Contact = new OpenApiContact()
                         {
                             Name = "Aaron Burke",
