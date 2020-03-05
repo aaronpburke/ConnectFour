@@ -1,4 +1,4 @@
-/*
+﻿/*
  * 98Point6 Drop-Token
  *
  * At-home interview implementation of \"98Point6 Drop-Token\" homework assignment
@@ -17,8 +17,13 @@ namespace ConnectFour.Api.Models
     /// Details of a game in progress
     /// </summary>
     [DataContract]
-    public partial class GameDetails
+    public partial class Game
     {
+        /// <summary>
+        /// Primary key
+        /// </summary>
+        public string Id { get; set; }
+
         /// <summary>
         /// State progress of the game -- e.g., in progress, or done
         /// </summary>
@@ -27,11 +32,13 @@ namespace ConnectFour.Api.Models
             /// <summary>
             /// Game is still in progress.
             /// </summary>
+            [Display(Name = "In Progress")]
             IN_PROGRESS,
 
             /// <summary>
             /// Game has finished.
             /// </summary>
+            [Display(Name = "Done")]
             DONE
         }
 
@@ -39,7 +46,19 @@ namespace ConnectFour.Api.Models
         /// Player names
         /// </summary>
         [Required]
-        public List<string> Players { get; set; }
+        public IEnumerable<string> Players { get; set; }
+
+        /// <summary>
+        /// Number of columns on the board
+        /// </summary>
+        [Required]
+        public int Columns { get; set; }
+
+        /// <summary>
+        /// Number of rows on the board
+        /// </summary>
+        [Required]
+        public int Rows { get; set; }
 
         /// <summary>
         /// State progress of the game
@@ -48,8 +67,8 @@ namespace ConnectFour.Api.Models
         public GameState State { get; set; }
 
         /// <summary>
-        /// Winning player name, if game is complete
+        /// Moves made during this game
         /// </summary>
-        public string Winner { get; set; }
+        public IEnumerable<GameMove> Moves { get; set; }
     }
 }

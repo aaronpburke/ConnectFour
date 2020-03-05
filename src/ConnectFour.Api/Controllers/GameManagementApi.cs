@@ -9,6 +9,7 @@
  */
 using ConnectFour.Api.Attributes;
 using ConnectFour.Api.Models;
+using ConnectFour.Api.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System;

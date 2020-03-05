@@ -23,18 +23,18 @@ namespace ConnectFour.Api.Models
         /// Player names
         /// </summary>
         [Required]
-        public List<string> Players { get; set; }
+        public IEnumerable<string> Players { get; set; }
 
         /// <summary>
         /// Number of columns on the board
         /// </summary>
         [Required]
-        public decimal Columns { get; set; }
+        public int Columns { get; set; }
 
         /// <summary>
         /// Number of rows on the board
         /// </summary>
         [Required]
-        public decimal Rows { get; set; }
+        public int Rows { get; set; }
     }
 }

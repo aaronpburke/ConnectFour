@@ -19,6 +19,11 @@ namespace ConnectFour.Api.Models
     public partial class GameMove
     {
         /// <summary>
+        /// Sequence number of the move within its parent <seealso cref="Game"/>
+        /// </summary>
+        public int MoveId { get; set; }
+
+        /// <summary>
         /// Type of the player move -- e.g., "move" (drop token) or quit
         /// </summary>
         public enum MoveType
@@ -26,11 +31,13 @@ namespace ConnectFour.Api.Models
             /// <summary>
             /// The player dropped a token.
             /// </summary>
+            [Display(Name = "Move")]
             MOVE,
 
             /// <summary>
             /// The player quit the game.
             /// </summary>
+            [Display(Name = "Quit")] 
             QUIT
         }
 
@@ -50,6 +57,6 @@ namespace ConnectFour.Api.Models
         /// The column the token was dropped into, if <see cref="Type"/> is <see cref="MoveType.MOVE"/>
         /// </summary>
         [Required]
-        public decimal Column { get; set; }
+        public int Column { get; set; }
     }
 }
