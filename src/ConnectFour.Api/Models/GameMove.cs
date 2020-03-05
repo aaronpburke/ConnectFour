@@ -37,7 +37,7 @@ namespace ConnectFour.Api.Models
             /// <summary>
             /// The player quit the game.
             /// </summary>
-            [Display(Name = "Quit")] 
+            [Display(Name = "Quit")]
             QUIT
         }
 

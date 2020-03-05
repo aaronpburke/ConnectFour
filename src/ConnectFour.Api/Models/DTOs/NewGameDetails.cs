@@ -23,7 +23,7 @@ namespace ConnectFour.Api.Models
         /// Player names
         /// </summary>
         [Required]
-        public IEnumerable<string> Players { get; set; }
+        public IList<string> Players { get; set; }
 
         /// <summary>
         /// Number of columns on the board

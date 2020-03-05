@@ -1,4 +1,6 @@
 using ConnectFour.Api.Filters;
+using ConnectFour.Api.Repositories;
+using ConnectFour.Api.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -92,6 +94,11 @@ namespace ConnectFour.Api
                     // Use [ValidateModelState] on Actions to actually validate it in C# as well!
                     c.OperationFilter<GeneratePathParamsValidationFilter>();
                 });
+
+            // Configure dependency injection
+            // TODO: When real DB backing store is added, these can be transient
+            services.AddSingleton<IGameRepository, GameRepository>();
+            services.AddSingleton<IGameService, GameService>();
         }
 
         /// <summary>

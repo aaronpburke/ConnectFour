@@ -10,6 +10,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
+using static ConnectFour.Api.Models.Game;
 
 namespace ConnectFour.Api.Models.DTOs
 {
@@ -20,26 +21,10 @@ namespace ConnectFour.Api.Models.DTOs
     public partial class GameDetails
     {
         /// <summary>
-        /// State progress of the game -- e.g., in progress, or done
-        /// </summary>
-        public enum GameState
-        {
-            /// <summary>
-            /// Game is still in progress.
-            /// </summary>
-            IN_PROGRESS,
-
-            /// <summary>
-            /// Game has finished.
-            /// </summary>
-            DONE
-        }
-
-        /// <summary>
         /// Player names
         /// </summary>
         [Required]
-        public List<string> Players { get; set; }
+        public IEnumerable<string> Players { get; set; }
 
         /// <summary>
         /// State progress of the game

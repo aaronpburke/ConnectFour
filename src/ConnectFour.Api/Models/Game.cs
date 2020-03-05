@@ -46,7 +46,7 @@ namespace ConnectFour.Api.Models
         /// Player names
         /// </summary>
         [Required]
-        public IEnumerable<string> Players { get; set; }
+        public IList<string> Players { get; set; }
 
         /// <summary>
         /// Number of columns on the board
@@ -69,6 +69,6 @@ namespace ConnectFour.Api.Models
         /// <summary>
         /// Moves made during this game
         /// </summary>
-        public IEnumerable<GameMove> Moves { get; set; }
+        public GameMove[] Moves { get; set; }
     }
 }

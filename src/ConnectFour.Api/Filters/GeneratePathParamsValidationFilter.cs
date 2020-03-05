@@ -83,7 +83,7 @@ namespace ConnectFour.Api.Filters
                         int rangeMin = (int)rangeAttr.ConstructorArguments[0].Value;
                         int rangeMax = (int)rangeAttr.ConstructorArguments[1].Value;
 
-                        if (swaggerParam.Schema.Type == "string") // TODO - confirm!
+                        if (swaggerParam.Schema.Type == "string")
                         {
                             swaggerParam.Schema.Minimum = rangeMin;
                             swaggerParam.Schema.Maximum = rangeMax;
