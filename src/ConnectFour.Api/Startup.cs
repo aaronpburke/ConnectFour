@@ -1,6 +1,6 @@
 using ConnectFour.Api.Filters;
-using ConnectFour.Api.Repositories;
-using ConnectFour.Api.Services;
+using ConnectFour.DataLayer.Repositories.GameRepository;
+using ConnectFour.ServiceLayer.GameService;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;

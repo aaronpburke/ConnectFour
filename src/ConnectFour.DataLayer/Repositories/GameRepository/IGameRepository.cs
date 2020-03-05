@@ -1,7 +1,7 @@
-﻿using ConnectFour.Api.Models;
+﻿using ConnectFour.DataLayer.Models;
 using System.Linq;
 
-namespace ConnectFour.Api.Repositories
+namespace ConnectFour.DataLayer.Repositories.GameRepository
 {
     /// <summary>
     /// Provides data-level access to all <seealso cref="Game"/>s.

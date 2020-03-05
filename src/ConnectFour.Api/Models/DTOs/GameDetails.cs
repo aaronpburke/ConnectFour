@@ -10,7 +10,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
-using static ConnectFour.Api.Models.Game;
+using static ConnectFour.DataLayer.Models.Game;
 
 namespace ConnectFour.Api.Models.DTOs
 {

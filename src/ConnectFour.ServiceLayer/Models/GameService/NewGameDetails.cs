@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
-namespace ConnectFour.Api.Models
+namespace ConnectFour.ServiceLayer.GameService
 {
     /// <summary>
     /// Details of a new game

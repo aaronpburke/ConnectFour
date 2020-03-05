@@ -1,6 +1,6 @@
-﻿using ConnectFour.Api.Models;
+﻿using ConnectFour.DataLayer.Models;
 
-namespace ConnectFour.Api.Repositories
+namespace ConnectFour.DataLayer.Repositories.GameRepository
 {
     /// <summary>
     /// Collection of all games

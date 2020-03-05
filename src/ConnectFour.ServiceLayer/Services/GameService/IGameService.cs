@@ -1,8 +1,9 @@
-﻿using ConnectFour.Api.Models;
-using ConnectFour.Api.Repositories;
+﻿using ConnectFour.DataLayer.Models;
+using ConnectFour.DataLayer.Repositories.GameRepository;
+using System;
 using System.Collections.Generic;
 
-namespace ConnectFour.Api.Services
+namespace ConnectFour.ServiceLayer.GameService
 {
     /// <summary>
     /// Provides business-layer logic for maintaining a <see cref="Game"/>.
@@ -14,6 +15,8 @@ namespace ConnectFour.Api.Services
         /// </summary>
         /// <param name="newGameDetails">New game details</param>
         /// <returns>The ID of the newly created game</returns>
+        /// <exception cref="ArgumentNullException"> if <paramref name="newGameDetails"/> is null</exception>
+        /// <exception cref="InvalidOperationException"> if game could not be created</exception>
         string CreateNewGame(NewGameDetails newGameDetails);
 
         /// <summary>

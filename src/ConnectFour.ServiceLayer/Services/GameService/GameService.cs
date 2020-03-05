@@ -1,10 +1,10 @@
-﻿using ConnectFour.Api.Models;
-using ConnectFour.Api.Repositories;
+﻿using ConnectFour.DataLayer.Models;
+using ConnectFour.DataLayer.Repositories.GameRepository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ConnectFour.Api.Services
+namespace ConnectFour.ServiceLayer.GameService
 {
     /// <summary>
     /// Provides business-layer logic for maintaining a <see cref="Game"/>.
@@ -100,8 +100,12 @@ namespace ConnectFour.Api.Services
                 throw new InvalidOperationException($"It is not {playerName}'s turn");
             }
 
+            // TODO: Check if play would overflow the column
+
             game.Moves.Append(move);
             move.MoveId = game.Moves.Length;
+
+            // TODO: Check if winner and update game state
 
             return move;
         }

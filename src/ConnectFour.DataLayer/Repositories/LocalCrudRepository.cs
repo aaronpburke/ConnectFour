@@ -2,7 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace ConnectFour.Api.Repositories
+namespace ConnectFour.DataLayer.Repositories
 {
     /// <summary>
     /// An in-memory local collection of objects.
