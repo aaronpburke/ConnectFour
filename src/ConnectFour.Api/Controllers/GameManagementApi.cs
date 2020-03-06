@@ -66,7 +66,9 @@ namespace ConnectFour.Api.Controllers
         {
             var game = _gameService.Get(gameId);
             if (game == null)
+            {
                 return NotFound();
+            }
 
             var details = new GameDetails()
             {

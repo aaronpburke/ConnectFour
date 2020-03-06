@@ -19,7 +19,9 @@ namespace ConnectFour.DataLayer.Repositories
         public new bool Add(T item)
         {
             if (this.Contains(GetKeyForItem(item)))
+            {
                 return false;
+            }
 
             base.Add(item);
             return true;
@@ -33,7 +35,9 @@ namespace ConnectFour.DataLayer.Repositories
         public bool Delete(string id)
         {
             if (this.Contains(id))
+            {
                 return false;
+            }
 
             base.Remove(id);
             return true;
@@ -69,7 +73,9 @@ namespace ConnectFour.DataLayer.Repositories
             {
                 int index = this.IndexOf(this[GetKeyForItem(item)]);
                 if (index < 0)
+                {
                     return false;
+                }
 
                 this.SetItem(index, item);
                 return true;

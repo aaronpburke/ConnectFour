@@ -54,7 +54,9 @@ namespace ConnectFour.Api.Controllers
         {
             var move = _gameService.GetMove(gameId, moveNumber);
             if (move == null)
+            {
                 return NotFound();
+            }
 
             return Ok(move);
         }
@@ -91,7 +93,9 @@ namespace ConnectFour.Api.Controllers
             }
 
             if (moves == null)
+            {
                 return NotFound();
+            }
 
             return Ok(moves);
         }
@@ -117,7 +121,9 @@ namespace ConnectFour.Api.Controllers
             {
                 var move = _gameService.PlayMove(gameId, playerName, gameMove);
                 if (move == null)
+                {
                     return NotFound();
+                }
 
                 return CreatedAtAction(nameof(GetMove), new { gameId, moveNumber = move.MoveId }, move);
             }
