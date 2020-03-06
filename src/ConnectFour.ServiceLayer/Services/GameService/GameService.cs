@@ -132,18 +132,17 @@ namespace ConnectFour.ServiceLayer.GameService
 
             if (GetActivePlayer(game) != playerName)
             {
-                throw new InvalidOperationException($"It is not {playerName}'s turn");
+                throw new PlayerTurnException($"It is not {playerName}'s turn");
             }
 
             // TODO: Consider making this a HashSet with faster lookup if we think we might have a LOT of players
             var playerId = game.Players.IndexOf(playerName);
             if (playerId == -1)
             {
-                throw new InvalidOperationException($"{playerName} does not exist in game {gameId}");
+                throw new PlayerNotFoundException($"{playerName} does not exist in game {gameId}");
             }
             if (!game.Board.DropToken(move.Column, playerId))
             {
-                // TODO: This should be a different exception type than above -- maybe even custom exceptions throughout?
                 throw new InvalidOperationException($"Could not place token in column {move.Column}; column is full");
             }
 
@@ -198,7 +197,7 @@ namespace ConnectFour.ServiceLayer.GameService
 
             if (!game.Players.Remove(playerName))
             {
-                throw new KeyNotFoundException($"{playerName} does not exist in game {gameId}");
+                throw new PlayerNotFoundException($"{playerName} does not exist in game {gameId}");
             }
         }
 

@@ -9,6 +9,7 @@
  */
 using ConnectFour.Api.Attributes;
 using ConnectFour.DataLayer.Models;
+using ConnectFour.ServiceLayer;
 using ConnectFour.ServiceLayer.GameService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -120,7 +121,15 @@ namespace ConnectFour.Api.Controllers
 
                 return CreatedAtAction(nameof(GetMove), new { gameId, moveNumber = move.MoveId }, move);
             }
-            // InvalidOperationException means it wasn't the player's turn
+            catch (PlayerTurnException)
+            {
+                return BadRequest();
+            }
+            catch (PlayerNotFoundException)
+            {
+                return NotFound();
+            }
+            // InvalidOperationException means the play was invalid
             catch (InvalidOperationException)
             {
                 return Conflict();
@@ -147,6 +156,10 @@ namespace ConnectFour.Api.Controllers
             }
             // KeyNotFoundException means the player did not exist in the requested game
             catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (PlayerNotFoundException)
             {
                 return NotFound();
             }
