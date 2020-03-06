@@ -118,7 +118,7 @@ namespace ConnectFour.Api.Controllers
                 if (move == null)
                     return NotFound();
 
-                return CreatedAtAction(nameof(GetMove), new { gameId = gameId, moveNumber = move.MoveId }, move);
+                return CreatedAtAction(nameof(GetMove), new { gameId, moveNumber = move.MoveId }, move);
             }
             // InvalidOperationException means it wasn't the player's turn
             catch (InvalidOperationException)
