@@ -26,7 +26,28 @@ namespace ConnectFour.DataLayer.Repositories.GameRepository
             }
 
             Context.Entry(game)
-                .Collection(d => d.Players)
+                .Collection(g => g.Players)
+                .Load();
+
+            return game;
+        }
+
+        /// <summary>
+        /// Loads <see cref="GameBoard"/> information into the <paramref name="game"/> from the backing store.
+        /// </summary>
+        /// <param name="game"><see cref="Game"/> for which to load the game board</param>
+        /// <returns><see cref="Game"/> with the <seealso cref="GameBoard"/> information loaded.</returns>
+        // TODO: Can this be a Game.WithBoard extension method instead of a method on the repository? This would be more natural and allow easy chains:
+        // _repository.GetById(id).WithBoard() /* With...() */;
+        public Game LoadGameBoard(Game game)
+        {
+            if (game == null)
+            {
+                return null;
+            }
+
+            Context.Entry(game)
+                .Reference(g => g.GameBoard)
                 .Load();
 
             return game;

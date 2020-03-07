@@ -29,7 +29,7 @@ namespace ConnectFour.ServiceLayer.GameService
             {
                 Id = Guid.NewGuid().ToString(),
                 State = Game.GameState.IN_PROGRESS,
-                Board = new GameBoard(newGameDetails.Rows, newGameDetails.Columns),
+                GameBoard = new GameBoard(newGameDetails.Rows, newGameDetails.Columns),
                 Players = new List<Player>(newGameDetails.Players.Select(playerName => new Player() { Name = playerName }))
             };
 
@@ -169,7 +169,7 @@ namespace ConnectFour.ServiceLayer.GameService
             {
                 throw new PlayerNotFoundException($"{playerName} does not exist in game {gameId}");
             }
-            if (!game.Board.DropToken(move.Column, player.Id))
+            if (!game.GameBoard.DropToken(move.Column, player.Id))
             {
                 throw new InvalidOperationException($"Could not place token in column {move.Column}; column is full");
             }
@@ -240,7 +240,7 @@ namespace ConnectFour.ServiceLayer.GameService
         /// <inheritdoc />
         public Game.GameState GetGameState(Game game)
         {
-            return game.Board.HasWinner() || game.Board.IsFull()
+            return game.GameBoard.HasWinner() || game.GameBoard.IsFull()
                 ? Game.GameState.DONE
                 : Game.GameState.IN_PROGRESS;
         }

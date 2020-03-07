@@ -23,9 +23,10 @@ namespace ConnectFour.DataLayer
                 .HasIndex(p => new { p.Id, p.Name })
                     .IsUnique();
 
+            modelBuilder.Entity<GameBoard>();
+
             // TODO: Remove as we add things to the database
             modelBuilder.Entity<Game>()
-                .Ignore(g => g.Board)
                 .Ignore(g => g.Moves);
         }
     }
