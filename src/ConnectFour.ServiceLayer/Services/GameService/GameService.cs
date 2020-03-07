@@ -1,4 +1,5 @@
-﻿using ConnectFour.DataLayer.Models;
+﻿using ConnectFour.DataLayer;
+using ConnectFour.DataLayer.Models;
 using ConnectFour.DataLayer.Repositories.GameRepository;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,11 @@ namespace ConnectFour.ServiceLayer.GameService
     /// </summary>
     public class GameService : GameRepository, IGameService
     {
+        public GameService(DataContext context)
+            : base(context)
+        {
+        }
+
         /// <inheritdoc />
         public string CreateNewGame(NewGameDetails newGameDetails)
         {
@@ -27,11 +33,8 @@ namespace ConnectFour.ServiceLayer.GameService
                 Board = new GameBoard(newGameDetails.Rows, newGameDetails.Columns)
             };
 
-            if (!Add(game))
-            {
-                throw new InvalidOperationException("could not add new game!");
-            }
-
+            Create(game);
+            
             return game.Id;
         }
 
@@ -48,7 +51,7 @@ namespace ConnectFour.ServiceLayer.GameService
                 throw new ArgumentOutOfRangeException(nameof(moveNumber));
             }
 
-            var game = Get(gameId);
+            var game = GetById(gameId);
             if (game == null)
             {
                 return null;
@@ -65,7 +68,7 @@ namespace ConnectFour.ServiceLayer.GameService
                 throw new ArgumentException(nameof(gameId));
             }
 
-            var game = Get(gameId);
+            var game = GetById(gameId);
             if (game == null)
             {
                 return null;
@@ -97,7 +100,7 @@ namespace ConnectFour.ServiceLayer.GameService
                 throw new ArgumentException("until cannot be less than start");
             }
 
-            var game = Get(gameId);
+            var game = GetById(gameId);
             if (game == null)
             {
                 return null;
@@ -124,7 +127,7 @@ namespace ConnectFour.ServiceLayer.GameService
                 throw new ArgumentNullException(nameof(move));
             }
 
-            var game = Get(gameId);
+            var game = GetById(gameId);
             if (game == null)
             {
                 return null;
@@ -184,7 +187,7 @@ namespace ConnectFour.ServiceLayer.GameService
                 throw new ArgumentException(nameof(playerName));
             }
 
-            var game = Get(gameId);
+            var game = GetById(gameId);
             if (game == null)
             {
                 throw new KeyNotFoundException($"{gameId} was not found");

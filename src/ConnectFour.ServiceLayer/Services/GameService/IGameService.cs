@@ -1,4 +1,5 @@
-﻿using ConnectFour.DataLayer.Models;
+﻿using ConnectFour.DataLayer;
+using ConnectFour.DataLayer.Models;
 using ConnectFour.DataLayer.Repositories.GameRepository;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ namespace ConnectFour.ServiceLayer.GameService
     /// <summary>
     /// Provides business-layer logic for maintaining a <see cref="Game"/>.
     /// </summary>
-    public interface IGameService : IGameRepository
+    public interface IGameService : IGenericRepository<string, Game>
     {
         /// <summary>
         /// Creates a new game with the specified <paramref name="newGameDetails"/>.

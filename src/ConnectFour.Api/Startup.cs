@@ -3,6 +3,7 @@ using ConnectFour.DataLayer.Repositories.GameRepository;
 using ConnectFour.ServiceLayer.GameService;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -96,9 +97,28 @@ namespace ConnectFour.Api
                 });
 
             // Configure dependency injection
-            // TODO: When real DB backing store is added, these can be transient
-            services.AddSingleton<IGameRepository, GameRepository>();
-            services.AddSingleton<IGameService, GameService>();
+            services.AddTransient<IGameService, GameService>();
+            services.AddTransient<IGameRepository, GameRepository>();
+
+            // Add the database back-end
+            var dbType = Configuration["DatabaseType"];
+            var connString = Configuration.GetConnectionString(dbType);
+            switch (dbType.ToUpperInvariant())
+            {
+                case "SQLITE":
+                    services.AddDbContext<DataLayer.DataContext>(
+                            options => options.UseSqlite(connString,
+                            b => b.MigrationsAssembly("ConnectFour.DataLayer")));
+                    break;
+
+                case "INMEMORY":
+                    services.AddDbContext<DataLayer.DataContext>
+                            (options => options.UseInMemoryDatabase(connString));
+                    break;
+
+                default:
+                    throw new NotSupportedException($"Unknown DatabaseType {dbType} in config file.");
+            }
         }
 
         /// <summary>

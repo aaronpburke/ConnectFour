@@ -18,13 +18,9 @@ namespace ConnectFour.DataLayer.Models
     /// Details of a game in progress
     /// </summary>
     [DataContract]
-    public partial class Game
+    public partial class Game : IEntity<string>
     {
-        /// <summary>
-        /// Primary key
-        /// </summary>
-        public string Id { get; set; }
-
+        public string GameId { get; set; }
         /// <summary>
         /// State progress of the game -- e.g., in progress, or done
         /// </summary>

@@ -64,7 +64,7 @@ namespace ConnectFour.Api.Controllers
         [SwaggerResponse(statusCode: 200, type: typeof(GameDetails), description: "Returns the specified game state.")]
         public virtual IActionResult GetGame([FromRoute][Required]string gameId)
         {
-            var game = _gameService.Get(gameId);
+            var game = _gameService.GetById(gameId);
             if (game == null)
             {
                 return NotFound();

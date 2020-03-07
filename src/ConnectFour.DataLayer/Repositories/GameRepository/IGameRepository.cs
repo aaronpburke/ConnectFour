@@ -6,7 +6,7 @@ namespace ConnectFour.DataLayer.Repositories.GameRepository
     /// <summary>
     /// Provides data-level access to all <seealso cref="Game"/>s.
     /// </summary>
-    public interface IGameRepository
+    public interface IGameRepositoryOld
     {
         /// <summary>
         /// Adds a new game to the collection.

@@ -1,16 +1,15 @@
 ﻿using ConnectFour.DataLayer.Models;
+using System.Linq;
 
 namespace ConnectFour.DataLayer.Repositories.GameRepository
 {
-    /// <summary>
-    /// Collection of all games
-    /// </summary>
-    public class GameRepository : LocalCrudRepository<Game>, IGameRepository
+    public interface IGameRepository : IGenericRepository<string, Game> { }
+    public class GameRepository : GenericRepository<string, Game>, IGameRepository
     {
-        /// <inheritdoc />
-        protected override string GetKeyForItem(Game item)
+        public GameRepository(DataContext context)
+            : base(context)
         {
-            return item.Id;
+
         }
     }
 }
