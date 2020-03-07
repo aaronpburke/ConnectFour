@@ -16,8 +16,18 @@ namespace ConnectFour.DataLayer.Models
     /// A single move within a game
     /// </summary>
     [DataContract]
-    public partial class GameMove
+    public partial class GameMove : IEntity<int>
     {
+        /// <summary>
+        /// Primary key
+        /// </summary>
+        public int Id { get; set; }
+
+        /// <summary>
+        /// Foreign key back to the containing game board
+        /// </summary>
+        public int GameBoardId { get; set; }
+
         /// <summary>
         /// Sequence number of the move within its parent <seealso cref="Game"/>
         /// </summary>

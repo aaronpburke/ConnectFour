@@ -1,5 +1,5 @@
-﻿using ConnectFour.DataLayer.Models;
-using ConnectFour.DataLayer.Repositories.GameRepository;
+﻿using ConnectFour.DataLayer;
+using ConnectFour.DataLayer.Models;
 using System;
 using System.Collections.Generic;
 
@@ -8,7 +8,7 @@ namespace ConnectFour.ServiceLayer.GameService
     /// <summary>
     /// Provides business-layer logic for maintaining a <see cref="Game"/>.
     /// </summary>
-    public interface IGameService : IGameRepository
+    public interface IGameService : IGenericRepository<string, Game>
     {
         /// <summary>
         /// Creates a new game with the specified <paramref name="newGameDetails"/>.
@@ -18,6 +18,8 @@ namespace ConnectFour.ServiceLayer.GameService
         /// <exception cref="ArgumentNullException"> if <paramref name="newGameDetails"/> is null</exception>
         /// <exception cref="InvalidOperationException"> if game could not be created</exception>
         string CreateNewGame(NewGameDetails newGameDetails);
+
+        GameDetails GetGameDetails(string gameId);
 
         /// <summary>
         /// Returns the <paramref name="moveNumber"/> sequenced <see cref="GameMove"/> action of the <paramref name="gameId"/>.

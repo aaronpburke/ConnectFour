@@ -351,3 +351,5 @@ MigrationBackup/
 
 # Ignore local documentation file
 /src/ConnectFour.Api/ConnectFour.Api.xml
+# Ignore local database
+/src/ConnectFour.Api/ConnectFour.db

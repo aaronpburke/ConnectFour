@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="New Rule Set" Description=" " ToolsVersion="15.0">
+  <Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
+    <!-- CA1303: Do not pass literals as localized parameters 
+			Validation: International globalization (multiple languages) is not a priority. 
+	-->
+	<Rule Id="CA1303" Action="Hidden" />
+	
+	<!-- CA2007: Do not directly await a Task
+			Validation: This has to do with adding ConfigureAwait(bool) to await statements,
+			which does not apply to .NET Core applications since there is no synchronization context.
+	-->
+	<Rule Id="CA2007" Action="Hidden" />
+	
+	<!-- CA2227: Collection properties should be read only
+			Validation: An entire collection can be replaced through the setter, but we
+			want to do this in many cases during object initialization.
+	-->
+	<Rule Id="CA2227" Action="Hidden" />
+  </Rules>
+</RuleSet>	

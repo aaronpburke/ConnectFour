@@ -1,0 +1,15 @@
+<Project>
+
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>..\CodeAnalysisRuleSet.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Uncomment to enable solution-wide code analysis using the above ruleset.
+          Tools -> Options -> Text Editor -> C# -> Advanced -> "Enable full solution analysis" must be checked.
+          
+        <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.3" />
+		-->
+  </ItemGroup>
+
+</Project>

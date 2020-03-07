@@ -1,4 +1,5 @@
-﻿using ConnectFour.DataLayer.Models;
+﻿using ConnectFour.DataLayer;
+using ConnectFour.DataLayer.Models;
 using ConnectFour.DataLayer.Repositories.GameRepository;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,11 @@ namespace ConnectFour.ServiceLayer.GameService
     /// </summary>
     public class GameService : GameRepository, IGameService
     {
+        public GameService(DataContext context)
+            : base(context)
+        {
+        }
+
         /// <inheritdoc />
         public string CreateNewGame(NewGameDetails newGameDetails)
         {
@@ -22,17 +28,40 @@ namespace ConnectFour.ServiceLayer.GameService
             var game = new Game()
             {
                 Id = Guid.NewGuid().ToString(),
-                Players = newGameDetails.Players,
                 State = Game.GameState.IN_PROGRESS,
-                Board = new GameBoard(newGameDetails.Rows, newGameDetails.Columns)
+                GameBoard = new GameBoard(newGameDetails.Rows, newGameDetails.Columns),
+                Players = new List<Player>(newGameDetails.Players.Select(playerName => new Player() { Name = playerName }))
             };
 
-            if (!Add(game))
-            {
-                throw new InvalidOperationException("could not add new game!");
-            }
+            Create(game);
 
             return game.Id;
+        }
+
+        public GameDetails GetGameDetails(string gameId)
+        {
+            if (string.IsNullOrWhiteSpace(gameId))
+            {
+                throw new ArgumentException(nameof(gameId));
+            }
+
+            var game = GetById(gameId);
+            if (game == null)
+            {
+                return null;
+            }
+
+            LoadPlayers(game);
+
+            var details = new GameDetails()
+            {
+                Players = game.Players.Select(p => p.Name),
+                // TODO: Determine game state and winner, if applicable
+                State = Game.GameState.IN_PROGRESS, //GetGameState(game),
+                Winner = ""
+            };
+
+            return details;
         }
 
         /// <inheritdoc />
@@ -48,13 +77,16 @@ namespace ConnectFour.ServiceLayer.GameService
                 throw new ArgumentOutOfRangeException(nameof(moveNumber));
             }
 
-            var game = Get(gameId);
+            var game = GetById(gameId);
             if (game == null)
             {
                 return null;
             }
 
-            return game.Moves.ElementAtOrDefault(moveNumber);
+            LoadGameBoard(game);
+            LoadGameMoves(game.GameBoard);
+
+            return game.GameBoard.Moves.ElementAtOrDefault(moveNumber);
         }
 
         /// <inheritdoc />
@@ -65,13 +97,16 @@ namespace ConnectFour.ServiceLayer.GameService
                 throw new ArgumentException(nameof(gameId));
             }
 
-            var game = Get(gameId);
+            var game = GetById(gameId);
             if (game == null)
             {
                 return null;
             }
 
-            return game.Moves;
+            LoadGameBoard(game);
+            LoadGameMoves(game.GameBoard);
+
+            return game.GameBoard.Moves;
         }
 
         /// <inheritdoc />
@@ -97,13 +132,18 @@ namespace ConnectFour.ServiceLayer.GameService
                 throw new ArgumentException("until cannot be less than start");
             }
 
-            var game = Get(gameId);
+            var game = GetById(gameId);
             if (game == null)
             {
                 return null;
             }
 
-            return new ArraySegment<GameMove>(game.Moves, start, until - start + 1);
+            LoadGameBoard(game);
+            LoadGameMoves(game.GameBoard);
+
+            // TODO: This could be more efficient by only returning the desired rows from the database
+            // instead of loading them all into memory, then converting to array, then segmenting it
+            return new ArraySegment<GameMove>(game.GameBoard.Moves.ToArray(), start, until - start + 1);
         }
 
         /// <inheritdoc />
@@ -124,30 +164,30 @@ namespace ConnectFour.ServiceLayer.GameService
                 throw new ArgumentNullException(nameof(move));
             }
 
-            var game = Get(gameId);
+            var game = GetById(gameId);
             if (game == null)
             {
                 return null;
             }
 
-            if (GetActivePlayer(game) != playerName)
+            if (GetActivePlayer(game).Name != playerName)
             {
                 throw new PlayerTurnException($"It is not {playerName}'s turn");
             }
 
-            // TODO: Consider making this a HashSet with faster lookup if we think we might have a LOT of players
-            var playerId = game.Players.IndexOf(playerName);
-            if (playerId == -1)
+            var player = game.Players.SingleOrDefault(p => p.Name == playerName);
+            if (player == null)
             {
                 throw new PlayerNotFoundException($"{playerName} does not exist in game {gameId}");
             }
-            if (!game.Board.DropToken(move.Column, playerId))
+            if (!game.GameBoard.DropToken(move.Column, player.Id))
             {
                 throw new InvalidOperationException($"Could not place token in column {move.Column}; column is full");
             }
 
-            game.Moves.Append(move);
-            move.MoveId = game.Moves.Length;
+            game.GameBoard.Moves.Add(move);
+            move.MoveId = game.GameBoard.Moves.Count(); // TODO: This smells inefficient - is there a better way than re-counting? Check the generated SQL.
+            Context.SaveChanges();  // TODO: Leaky abstraction; move to data layer?
 
             // TODO: Check if winner and update game state
 
@@ -158,17 +198,21 @@ namespace ConnectFour.ServiceLayer.GameService
         /// Gets the active player for the specified <paramref name="game"/>.
         /// </summary>
         /// <param name="game">Game for which to retrieve the currently active player</param>
-        /// <returns>The name of the currently active player</returns>
-        private string GetActivePlayer(Game game)
+        /// <returns>The currently active <see cref="Player"/></returns>
+        private Player GetActivePlayer(Game game)
         {
             if (game == null)
             {
                 throw new ArgumentNullException(nameof(game));
             }
 
+            LoadPlayers(game);
+            LoadGameBoard(game);
+            LoadGameMoves(game.GameBoard);
+
             // TODO: Check game state
 
-            return game.Players.ElementAt(game.Moves.Length % game.Players.Count());
+            return game.Players.ElementAt(game.GameBoard.Moves.Count() % game.Players.Count());
         }
 
         /// <inheritdoc />
@@ -184,27 +228,33 @@ namespace ConnectFour.ServiceLayer.GameService
                 throw new ArgumentException(nameof(playerName));
             }
 
-            var game = Get(gameId);
+            var game = GetById(gameId);
             if (game == null)
             {
                 throw new KeyNotFoundException($"{gameId} was not found");
             }
+
+            LoadPlayers(game);
 
             if (GetGameState(game) == Game.GameState.DONE)
             {
                 throw new InvalidOperationException($"{gameId} has already finished; cannot remove player");
             }
 
-            if (!game.Players.Remove(playerName))
+            var player = game.Players.FirstOrDefault(p => p.Name == playerName);
+            if (player == null)
             {
                 throw new PlayerNotFoundException($"{playerName} does not exist in game {gameId}");
             }
+
+            game.Players.Remove(player);
+            Context.SaveChanges();  // TODO: Leaky abstraction; move to data layer?
         }
 
         /// <inheritdoc />
         public Game.GameState GetGameState(Game game)
         {
-            return game.Board.HasWinner() || game.Board.IsFull()
+            return game.GameBoard.HasWinner() || game.GameBoard.IsFull()
                 ? Game.GameState.DONE
                 : Game.GameState.IN_PROGRESS;
         }

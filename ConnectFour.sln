@@ -9,7 +9,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectFour.DataLayer", "sr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectFour.ServiceLayer", "src\ConnectFour.ServiceLayer\ConnectFour.ServiceLayer.csproj", "{7CEB7A63-2C2F-48F1-86C4-FED60261DF34}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConnectFour.UnitTests", "src\ConnectFour.UnitTests\ConnectFour.UnitTests.csproj", "{BD4A512B-223E-4673-8A91-D261B3F57324}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectFour.UnitTests", "src\ConnectFour.UnitTests\ConnectFour.UnitTests.csproj", "{BD4A512B-223E-4673-8A91-D261B3F57324}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{B64EA969-61B3-4688-B79B-A82E58798773}"
+	ProjectSection(SolutionItems) = preProject
+		src\CodeAnalysisRuleSet.ruleset = src\CodeAnalysisRuleSet.ruleset
+		src\Directory.Build.props = src\Directory.Build.props
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
