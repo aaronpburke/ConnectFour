@@ -17,7 +17,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "ConnectFour.Api": {
+    "web": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "swagger",
