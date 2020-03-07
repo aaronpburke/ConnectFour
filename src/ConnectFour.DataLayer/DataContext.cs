@@ -5,14 +5,22 @@ using System.Threading.Tasks;
 
 namespace ConnectFour.DataLayer
 {
+    /// <summary>
+    /// <seealso cref="DbContext"/> containing all tracked Entity Framework entities
+    /// </summary>
     public class DataContext : DbContext
     {
+        /// <summary>
+        /// Collection of all <see cref="Game"/>s
+        /// </summary>
         public DbSet<Game> Games { get; set; }
 
+        /// <inheritdoc/>
         public DataContext(DbContextOptions options) : base(options)
         {
         }
 
+        /// <inheritdoc/>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Game>();
@@ -31,11 +39,23 @@ namespace ConnectFour.DataLayer
         }
     }
 
+    /// <summary>
+    /// Required interface for DB objects stored via Entity Framework to use <seealso cref="IGenericRepository{TKey, TEntity}"/>
+    /// </summary>
+    /// <typeparam name="TKey">Type of the primary key</typeparam>
     public interface IEntity<TKey>
     {
+        /// <summary>
+        /// Primary key
+        /// </summary>
         TKey Id { get; set; }
     }
 
+    /// <summary>
+    /// Generic interface for easily accessing data objects stored in Entity Framework.
+    /// </summary>
+    /// <typeparam name="TKey">Type of the <typeparamref name="TEntity"/>'s primary key</typeparam>
+    /// <typeparam name="TEntity">Type of the entity to store</typeparam>
     public interface IGenericRepository<TKey, TEntity> where TEntity : IEntity<TKey>
     {
         /// <summary>
@@ -100,6 +120,11 @@ namespace ConnectFour.DataLayer
         Task DeleteAsync(TKey id);
     }
 
+    /// <summary>
+    /// Generic class for easily accessing data objects stored in Entity Framework.
+    /// </summary>
+    /// <typeparam name="TKey">Type of the <typeparamref name="TEntity"/>'s primary key</typeparam>
+    /// <typeparam name="TEntity">Type of the entity to store</typeparam>
     public class GenericRepository<TKey, TEntity> : IGenericRepository<TKey, TEntity> where TEntity : class, IEntity<TKey>
     {
         protected readonly DbContext Context;
@@ -109,47 +134,55 @@ namespace ConnectFour.DataLayer
             Context = dbContext;
         }
 
+        /// <inheritdoc/>
         public virtual IQueryable<TEntity> GetAll()
         {
             return Context.Set<TEntity>().AsNoTracking();
         }
 
+        /// <inheritdoc/>
         public virtual TEntity GetById(TKey id)
         {
             return Context.Set<TEntity>()
                         .Find(id);
         }
 
+        /// <inheritdoc/>
         public virtual async Task<TEntity> GetByIdAsync(TKey id)
         {
             return await Context.Set<TEntity>()
                         .FindAsync(id);
         }
 
+        /// <inheritdoc/>
         public virtual void Create(TEntity entity)
         {
             Context.Set<TEntity>().Add(entity);
             Context.SaveChanges();
         }
 
+        /// <inheritdoc/>
         public virtual async Task CreateAsync(TEntity entity)
         {
             await Context.Set<TEntity>().AddAsync(entity);
             await Context.SaveChangesAsync();
         }
 
+        /// <inheritdoc/>
         public virtual void Update(TKey id, TEntity entity)
         {
             Context.Set<TEntity>().Update(entity);
             Context.SaveChanges();
         }
 
+        /// <inheritdoc/>
         public virtual async Task UpdateAsync(TKey id, TEntity entity)
         {
             Context.Set<TEntity>().Update(entity);
             await Context.SaveChangesAsync();
         }
 
+        /// <inheritdoc/>
         public virtual void Delete(TKey id)
         {
             var entity = GetById(id);
@@ -157,6 +190,7 @@ namespace ConnectFour.DataLayer
             Context.SaveChanges();
         }
 
+        /// <inheritdoc/>
         public virtual async Task DeleteAsync(TKey id)
         {
             var entity = await GetByIdAsync(id);
