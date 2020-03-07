@@ -12,7 +12,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using static ConnectFour.DataLayer.Models.Game;
 
-namespace ConnectFour.Api.Models.DTOs
+namespace ConnectFour.ServiceLayer.GameService
 {
     /// <summary>
     /// Details of a game in progress

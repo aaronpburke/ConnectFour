@@ -1,6 +1,5 @@
 ﻿using ConnectFour.DataLayer;
 using ConnectFour.DataLayer.Models;
-using ConnectFour.DataLayer.Repositories.GameRepository;
 using System;
 using System.Collections.Generic;
 
@@ -19,6 +18,8 @@ namespace ConnectFour.ServiceLayer.GameService
         /// <exception cref="ArgumentNullException"> if <paramref name="newGameDetails"/> is null</exception>
         /// <exception cref="InvalidOperationException"> if game could not be created</exception>
         string CreateNewGame(NewGameDetails newGameDetails);
+
+        GameDetails GetGameDetails(string gameId);
 
         /// <summary>
         /// Returns the <paramref name="moveNumber"/> sequenced <see cref="GameMove"/> action of the <paramref name="gameId"/>.

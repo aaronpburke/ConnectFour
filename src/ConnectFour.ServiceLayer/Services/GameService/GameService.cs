@@ -28,14 +28,40 @@ namespace ConnectFour.ServiceLayer.GameService
             var game = new Game()
             {
                 Id = Guid.NewGuid().ToString(),
-                Players = newGameDetails.Players,
                 State = Game.GameState.IN_PROGRESS,
-                Board = new GameBoard(newGameDetails.Rows, newGameDetails.Columns)
+                Board = new GameBoard(newGameDetails.Rows, newGameDetails.Columns),
+                Players = new List<Player>(newGameDetails.Players.Select(playerName => new Player() { Name = playerName }))
             };
 
             Create(game);
-            
+
             return game.Id;
+        }
+
+        public GameDetails GetGameDetails(string gameId)
+        {
+            if (string.IsNullOrWhiteSpace(gameId))
+            {
+                throw new ArgumentException(nameof(gameId));
+            }
+
+            var game = GetById(gameId);
+            if (game == null)
+            {
+                return null;
+            }
+
+            LoadPlayers(game);
+
+            var details = new GameDetails()
+            {
+                Players = game.Players.Select(p => p.Name),
+                // TODO: Determine game state and winner, if applicable
+                State = Game.GameState.IN_PROGRESS, //GetGameState(game),
+                Winner = ""
+            };
+
+            return details;
         }
 
         /// <inheritdoc />
@@ -133,18 +159,17 @@ namespace ConnectFour.ServiceLayer.GameService
                 return null;
             }
 
-            if (GetActivePlayer(game) != playerName)
+            if (GetActivePlayer(game).Name != playerName)
             {
                 throw new PlayerTurnException($"It is not {playerName}'s turn");
             }
 
-            // TODO: Consider making this a HashSet with faster lookup if we think we might have a LOT of players
-            var playerId = game.Players.IndexOf(playerName);
-            if (playerId == -1)
+            var player = game.Players.SingleOrDefault(p => p.Name == playerName);
+            if (player == null)
             {
                 throw new PlayerNotFoundException($"{playerName} does not exist in game {gameId}");
             }
-            if (!game.Board.DropToken(move.Column, playerId))
+            if (!game.Board.DropToken(move.Column, player.Id))
             {
                 throw new InvalidOperationException($"Could not place token in column {move.Column}; column is full");
             }
@@ -161,13 +186,15 @@ namespace ConnectFour.ServiceLayer.GameService
         /// Gets the active player for the specified <paramref name="game"/>.
         /// </summary>
         /// <param name="game">Game for which to retrieve the currently active player</param>
-        /// <returns>The name of the currently active player</returns>
-        private string GetActivePlayer(Game game)
+        /// <returns>The currently active <see cref="Player"/></returns>
+        private Player GetActivePlayer(Game game)
         {
             if (game == null)
             {
                 throw new ArgumentNullException(nameof(game));
             }
+
+            LoadPlayers(game);
 
             // TODO: Check game state
 
@@ -193,15 +220,21 @@ namespace ConnectFour.ServiceLayer.GameService
                 throw new KeyNotFoundException($"{gameId} was not found");
             }
 
+            LoadPlayers(game);
+
             if (GetGameState(game) == Game.GameState.DONE)
             {
                 throw new InvalidOperationException($"{gameId} has already finished; cannot remove player");
             }
 
-            if (!game.Players.Remove(playerName))
+            var player = game.Players.FirstOrDefault(p => p.Name == playerName);
+            if (player == null)
             {
                 throw new PlayerNotFoundException($"{playerName} does not exist in game {gameId}");
             }
+
+            game.Players.Remove(player);
+            Context.SaveChanges();  // TODO: Leaky abstraction; move to data layer?
         }
 
         /// <inheritdoc />

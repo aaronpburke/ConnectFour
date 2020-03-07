@@ -44,12 +44,6 @@ namespace ConnectFour.DataLayer.Models
         }
 
         /// <summary>
-        /// Player names
-        /// </summary>
-        [Required]
-        public IList<string> Players { get; set; }
-
-        /// <summary>
         /// State progress of the game
         /// </summary>
         [Required]
@@ -61,6 +55,15 @@ namespace ConnectFour.DataLayer.Models
         public GameMove[] Moves { get; set; }
 
         public GameBoard Board { get; set; }
+
+        // -------------
+        // Relationships
+
+        /// <summary>
+        /// Player names
+        /// </summary>
+        [Required]
+        public virtual ICollection<Player> Players { get; set; }
     }
 
     public class GameBoard

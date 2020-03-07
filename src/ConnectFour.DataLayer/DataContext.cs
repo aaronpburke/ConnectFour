@@ -1,10 +1,6 @@
 ﻿using ConnectFour.DataLayer.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ConnectFour.DataLayer
@@ -12,19 +8,24 @@ namespace ConnectFour.DataLayer
     public class DataContext : DbContext
     {
         public DbSet<Game> Games { get; set; }
-        
+        public DbSet<Player> Players { get; set; }
+
         public DataContext(DbContextOptions options) : base(options)
         {
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Game>()
-                .HasKey(g => g.Id);
+            modelBuilder.Entity<Game>();
 
+            modelBuilder.Entity<Player>()
+                // Every unique player name only gets one DB ID
+                .HasIndex(p => new { p.Id, p.Name })
+                    .IsUnique();
+
+            // TODO: Remove as we add things to the database
             modelBuilder.Entity<Game>()
                 .Ignore(g => g.Board)
-                .Ignore(g => g.Players)
                 .Ignore(g => g.Moves);
         }
     }
@@ -100,66 +101,66 @@ namespace ConnectFour.DataLayer
 
     public class GenericRepository<TKey, TEntity> : IGenericRepository<TKey, TEntity> where TEntity : class, IEntity<TKey>
     {
-        private readonly DbContext _context;
+        protected readonly DbContext Context;
 
         public GenericRepository(DbContext dbContext)
         {
-            _context = dbContext;
+            Context = dbContext;
         }
 
-        public IQueryable<TEntity> GetAll()
+        public virtual IQueryable<TEntity> GetAll()
         {
-            return _context.Set<TEntity>().AsNoTracking();
+            return Context.Set<TEntity>().AsNoTracking();
         }
 
-        public TEntity GetById(TKey id)
+        public virtual TEntity GetById(TKey id)
         {
-            return _context.Set<TEntity>()
+            return Context.Set<TEntity>()
                         .Find(id);
         }
 
-        public async Task<TEntity> GetByIdAsync(TKey id)
+        public virtual async Task<TEntity> GetByIdAsync(TKey id)
         {
-            return await _context.Set<TEntity>()
+            return await Context.Set<TEntity>()
                         .FindAsync(id);
         }
 
-        public void Create(TEntity entity)
+        public virtual void Create(TEntity entity)
         {
-            _context.Set<TEntity>().Add(entity);
-            _context.SaveChanges();
+            Context.Set<TEntity>().Add(entity);
+            Context.SaveChanges();
         }
 
-        public async Task CreateAsync(TEntity entity)
+        public virtual async Task CreateAsync(TEntity entity)
         {
-            await _context.Set<TEntity>().AddAsync(entity);
-            await _context.SaveChangesAsync();
+            await Context.Set<TEntity>().AddAsync(entity);
+            await Context.SaveChangesAsync();
         }
 
-        public void Update(TKey id, TEntity entity)
+        public virtual void Update(TKey id, TEntity entity)
         {
-            _context.Set<TEntity>().Update(entity);
-            _context.SaveChanges();
+            Context.Set<TEntity>().Update(entity);
+            Context.SaveChanges();
         }
 
-        public async Task UpdateAsync(TKey id, TEntity entity)
+        public virtual async Task UpdateAsync(TKey id, TEntity entity)
         {
-            _context.Set<TEntity>().Update(entity);
-            await _context.SaveChangesAsync();
+            Context.Set<TEntity>().Update(entity);
+            await Context.SaveChangesAsync();
         }
 
-        public void Delete(TKey id)
+        public virtual void Delete(TKey id)
         {
             var entity = GetById(id);
-            _context.Set<TEntity>().Remove(entity);
-            _context.SaveChanges();
+            Context.Set<TEntity>().Remove(entity);
+            Context.SaveChanges();
         }
 
-        public async Task DeleteAsync(TKey id)
+        public virtual async Task DeleteAsync(TKey id)
         {
             var entity = await GetByIdAsync(id);
-            _context.Set<TEntity>().Remove(entity);
-            await _context.SaveChangesAsync();
+            Context.Set<TEntity>().Remove(entity);
+            await Context.SaveChangesAsync();
         }
     }
 }
