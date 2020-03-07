@@ -24,7 +24,8 @@ namespace ConnectFour.DataLayer
 
             modelBuilder.Entity<Game>()
                 .Ignore(g => g.Board)
-                .Ignore(g => g.Players);
+                .Ignore(g => g.Players)
+                .Ignore(g => g.Moves);
         }
     }
 

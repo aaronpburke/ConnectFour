@@ -134,6 +134,13 @@ namespace ConnectFour.Api
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+
+                // Ensure the database is created if we're in a development mode
+                using (var serviceScope = app.ApplicationServices.CreateScope())
+                {
+                    var context = serviceScope.ServiceProvider.GetService<DataLayer.DataContext>();
+                    context.Database.EnsureCreated();
+                }
             }
 
             app.UseHttpsRedirection();
