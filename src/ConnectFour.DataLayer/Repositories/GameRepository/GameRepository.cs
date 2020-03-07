@@ -1,4 +1,5 @@
 ﻿using ConnectFour.DataLayer.Models;
+using System;
 
 namespace ConnectFour.DataLayer.Repositories.GameRepository
 {
@@ -51,6 +52,27 @@ namespace ConnectFour.DataLayer.Repositories.GameRepository
                 .Load();
 
             return game;
+        }
+
+        /// <summary>
+        /// Loads <see cref="GameMove"/> information into the <paramref name="gameBoard"/> from the backing store.
+        /// </summary>
+        /// <param name="gameBoard"><see cref="GameBoard"/> for which to load the game moves</param>
+        /// <returns><see cref="GameBoard"/> with the <seealso cref="GameBoard"/> information loaded.</returns>
+        // TODO: Can this be a GameBoard.WithMoves extension method instead of a method on the repository? This would be more natural and allow easy chains:
+        // _repository.GetById(id).WithBoard().WithMoves() /* With...() */;
+        public GameBoard LoadGameMoves(GameBoard gameBoard)
+        {
+            if (gameBoard == null)
+            {
+                throw new ArgumentNullException("Game board is not loaded; call LoadGameBoard(game) first!");
+            }
+
+            Context.Entry(gameBoard)
+                .Collection(gb => gb.Moves)
+                .Load();
+
+            return gameBoard;
         }
     }
 }

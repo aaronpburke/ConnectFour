@@ -24,9 +24,10 @@ namespace ConnectFour.DataLayer
 
             modelBuilder.Entity<GameBoard>();
 
-            // TODO: Remove as we add things to the database
-            modelBuilder.Entity<Game>()
-                .Ignore(g => g.Moves);
+            modelBuilder.Entity<GameMove>()
+                // Ensure that move sequence numbers within a single game board are unique
+                .HasIndex(m => new { m.GameBoardId, m.MoveId })
+                    .IsUnique();
         }
     }
 

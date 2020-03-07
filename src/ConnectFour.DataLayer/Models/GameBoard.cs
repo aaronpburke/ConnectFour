@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ConnectFour.DataLayer.Models
 {
-    public class GameBoard : IEntity<int>
+    public partial class GameBoard : IEntity<int>
     {
         /// <summary>
         /// Primary key
@@ -40,6 +41,14 @@ namespace ConnectFour.DataLayer.Models
         public int Winner { get; private set; } = NO_WINNER;
         public const int NO_WINNER = -1;
 
+        // -------------
+        // Relationships
+
+        public virtual ICollection<GameMove> Moves { get; private set; }
+    }
+
+    public partial class GameBoard
+    {
         public GameBoard(int rows, int columns)
         {
             if (rows <= 0)

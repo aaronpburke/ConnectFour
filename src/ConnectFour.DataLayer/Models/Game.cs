@@ -48,11 +48,6 @@ namespace ConnectFour.DataLayer.Models
         [Required]
         public GameState State { get; set; }
 
-        /// <summary>
-        /// Moves made during this game
-        /// </summary>
-        public GameMove[] Moves { get; set; }
-
         // -------------
         // Relationships
 

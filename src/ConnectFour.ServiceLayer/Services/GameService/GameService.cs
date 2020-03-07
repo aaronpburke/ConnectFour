@@ -83,7 +83,10 @@ namespace ConnectFour.ServiceLayer.GameService
                 return null;
             }
 
-            return game.Moves.ElementAtOrDefault(moveNumber);
+            LoadGameBoard(game);
+            LoadGameMoves(game.GameBoard);
+
+            return game.GameBoard.Moves.ElementAtOrDefault(moveNumber);
         }
 
         /// <inheritdoc />
@@ -100,7 +103,10 @@ namespace ConnectFour.ServiceLayer.GameService
                 return null;
             }
 
-            return game.Moves;
+            LoadGameBoard(game);
+            LoadGameMoves(game.GameBoard);
+
+            return game.GameBoard.Moves;
         }
 
         /// <inheritdoc />
@@ -132,7 +138,12 @@ namespace ConnectFour.ServiceLayer.GameService
                 return null;
             }
 
-            return new ArraySegment<GameMove>(game.Moves, start, until - start + 1);
+            LoadGameBoard(game);
+            LoadGameMoves(game.GameBoard);
+
+            // TODO: This could be more efficient by only returning the desired rows from the database
+            // instead of loading them all into memory, then converting to array, then segmenting it
+            return new ArraySegment<GameMove>(game.GameBoard.Moves.ToArray(), start, until - start + 1);
         }
 
         /// <inheritdoc />
@@ -174,8 +185,9 @@ namespace ConnectFour.ServiceLayer.GameService
                 throw new InvalidOperationException($"Could not place token in column {move.Column}; column is full");
             }
 
-            game.Moves.Append(move);
-            move.MoveId = game.Moves.Length;
+            game.GameBoard.Moves.Add(move);
+            move.MoveId = game.GameBoard.Moves.Count(); // TODO: This smells inefficient - is there a better way than re-counting? Check the generated SQL.
+            Context.SaveChanges();  // TODO: Leaky abstraction; move to data layer?
 
             // TODO: Check if winner and update game state
 
@@ -195,10 +207,12 @@ namespace ConnectFour.ServiceLayer.GameService
             }
 
             LoadPlayers(game);
+            LoadGameBoard(game);
+            LoadGameMoves(game.GameBoard);
 
             // TODO: Check game state
 
-            return game.Players.ElementAt(game.Moves.Length % game.Players.Count());
+            return game.Players.ElementAt(game.GameBoard.Moves.Count() % game.Players.Count());
         }
 
         /// <inheritdoc />
