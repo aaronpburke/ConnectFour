@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,16 +21,16 @@ namespace ConnectFour.DataLayer
         {
             modelBuilder.Entity<Game>()
                 .HasKey(g => g.Id);
-            
+
             modelBuilder.Entity<Game>()
                 .Ignore(g => g.Board)
                 .Ignore(g => g.Players);
         }
     }
 
-    public class IEntity<TKey>
+    public interface IEntity<TKey>
     {
-        public TKey Id;
+        TKey Id { get; set; }
     }
 
     public interface IGenericRepository<TKey, TEntity> where TEntity : IEntity<TKey>
@@ -96,7 +97,7 @@ namespace ConnectFour.DataLayer
         Task DeleteAsync(TKey id);
     }
 
-    public class GenericRepository<TKey, TEntity> : IGenericRepository<TKey, TEntity> where TEntity : IEntity<TKey>
+    public class GenericRepository<TKey, TEntity> : IGenericRepository<TKey, TEntity> where TEntity : class, IEntity<TKey>
     {
         private readonly DbContext _context;
 

@@ -21,6 +21,11 @@ namespace ConnectFour.DataLayer.Models
     public partial class Game : IEntity<string>
     {
         /// <summary>
+        /// Primary key
+        /// </summary>
+        public string Id { get; set; }
+
+        /// <summary>
         /// State progress of the game -- e.g., in progress, or done
         /// </summary>
         public enum GameState
