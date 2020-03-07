@@ -19,7 +19,7 @@ namespace ConnectFour.DataLayer
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Game>()
-                .HasKey(g => g.GameId);
+                .HasKey(g => g.Id);
             
             modelBuilder.Entity<Game>()
                 .Ignore(g => g.Board)

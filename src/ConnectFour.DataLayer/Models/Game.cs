@@ -20,7 +20,6 @@ namespace ConnectFour.DataLayer.Models
     [DataContract]
     public partial class Game : IEntity<string>
     {
-        public string GameId { get; set; }
         /// <summary>
         /// State progress of the game -- e.g., in progress, or done
         /// </summary>
