@@ -8,7 +8,6 @@ namespace ConnectFour.DataLayer
     public class DataContext : DbContext
     {
         public DbSet<Game> Games { get; set; }
-        public DbSet<Player> Players { get; set; }
 
         public DataContext(DbContextOptions options) : base(options)
         {
