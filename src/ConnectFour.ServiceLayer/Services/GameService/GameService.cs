@@ -1,6 +1,7 @@
 ﻿using ConnectFour.DataLayer;
 using ConnectFour.DataLayer.Models;
 using ConnectFour.DataLayer.Repositories.GameRepository;
+using ConnectFour.ServiceLayer.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +13,12 @@ namespace ConnectFour.ServiceLayer.GameService
     /// </summary>
     public class GameService : GameRepository, IGameService
     {
-        public GameService(DataContext context)
+        private readonly GameOptions _gameOptions;
+
+        public GameService(DataContext context, GameOptions gameOptions)
             : base(context)
         {
+            _gameOptions = gameOptions;
         }
 
         /// <inheritdoc />
@@ -29,7 +33,7 @@ namespace ConnectFour.ServiceLayer.GameService
             {
                 Id = Guid.NewGuid().ToString(),
                 State = Game.GameState.IN_PROGRESS,
-                GameBoard = new GameBoard(newGameDetails.Rows, newGameDetails.Columns),
+                GameBoard = new GameBoard(newGameDetails.Rows, newGameDetails.Columns, _gameOptions.WinningChainLength),
                 Players = new List<Player>(newGameDetails.Players.Select(playerName => new Player() { Name = playerName }))
             };
 
@@ -56,10 +60,14 @@ namespace ConnectFour.ServiceLayer.GameService
             var details = new GameDetails()
             {
                 Players = game.Players.Select(p => p.Name),
-                // TODO: Determine game state and winner, if applicable
-                State = Game.GameState.IN_PROGRESS, //GetGameState(game),
-                Winner = ""
+                State = GetGameState(game),
             };
+
+            var winner = game.GameBoard.GetWinner();
+            if (winner != GameBoard.NO_WINNER)
+            {
+                details.Winner = game.Players.FirstOrDefault(p => p.Id == winner)?.Name;
+            }
 
             return details;
         }
@@ -254,6 +262,11 @@ namespace ConnectFour.ServiceLayer.GameService
         /// <inheritdoc />
         public Game.GameState GetGameState(Game game)
         {
+            if (game.GameBoard == null)
+            {
+                LoadGameBoard(game);
+            }
+
             return game.GameBoard.HasWinner() || game.GameBoard.IsFull()
                 ? Game.GameState.DONE
                 : Game.GameState.IN_PROGRESS;

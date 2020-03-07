@@ -1,6 +1,7 @@
 using ConnectFour.Api.Filters;
 using ConnectFour.DataLayer.Repositories.GameRepository;
 using ConnectFour.ServiceLayer.GameService;
+using ConnectFour.ServiceLayer.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using System;
 using System.IO;
@@ -99,6 +101,17 @@ namespace ConnectFour.Api
             // Configure dependency injection
             services.AddTransient<IGameService, GameService>();
             services.AddTransient<IGameRepository, GameRepository>();
+
+            // Configure the game options
+            {
+                // Bind the configuration object using IOptions
+                services.Configure<GameOptions>(Configuration.GetSection("GameOptions"));
+
+                // Optionally explicitly register the configuration object by delegating to the IOptions object
+                // (so consumers of the configuration don't have to pollute themselves with IOptions<T>)
+                services.AddSingleton(resolver =>
+                    resolver.GetRequiredService<IOptions<GameOptions>>().Value);
+            }
 
             // Add the database back-end
             var dbType = Configuration["DatabaseType"];

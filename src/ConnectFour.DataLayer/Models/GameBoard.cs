@@ -36,6 +36,16 @@ namespace ConnectFour.DataLayer.Models
         public int Rows { get; protected set; }
 
         /// <summary>
+        /// Default winning chain length
+        /// </summary>
+        public const int DEFAULT_WINNING_CHAIN_LENGTH = 4;
+
+        /// <summary>
+        /// Number of connecting tokens to determine a winner
+        /// </summary>
+        public int WinningChainLength { get; protected set; } = DEFAULT_WINNING_CHAIN_LENGTH;
+
+        /// <summary>
         /// Player ID of the winning player, if any.
         /// </summary>
         public int Winner { get; private set; } = NO_WINNER;
@@ -49,7 +59,7 @@ namespace ConnectFour.DataLayer.Models
 
     public partial class GameBoard
     {
-        public GameBoard(int rows, int columns)
+        public GameBoard(int rows, int columns, int winningChainLength)
         {
             if (rows <= 0)
             {
@@ -63,6 +73,8 @@ namespace ConnectFour.DataLayer.Models
 
             Rows = rows;
             Columns = columns;
+
+            WinningChainLength = winningChainLength;
 
             _board = new int?[Columns, Rows];
         }
@@ -100,24 +112,26 @@ namespace ConnectFour.DataLayer.Models
             for (int row = 0; row < Rows; row++)
             {
                 var firstToken = _board[0, row];
-                int col;
-                for (col = 1; col < Columns; col++)
+                int chainLength = 0;
+                for (int col = 1; col < Columns && chainLength <= WinningChainLength; col++, chainLength++)
                 {
                     // If there's no token, the chain is broken!
                     if (!_board[col, row].HasValue)
                     {
-                        break;
+                        chainLength = 0;
+                        continue;
                     }
 
                     // Different player found; the chain is broken!
                     if (_board[col, row].Value != firstToken)
                     {
-                        break;
+                        chainLength = 0;
+                        continue;
                     }
                 }
 
                 // We checked the whole row and didn't find a break -- WINNER!
-                if (col == Columns)
+                if (chainLength >= WinningChainLength)
                 {
                     return _board[Columns, row].Value;
                 }
@@ -136,24 +150,26 @@ namespace ConnectFour.DataLayer.Models
             for (int col = 0; col < Columns; col++)
             {
                 var firstToken = _board[col, 0];
-                int row;
-                for (row = 1; row < Rows; row++)
+                int chainLength = 0;
+                for (int row = 1; row < Rows && chainLength <= WinningChainLength; row++, chainLength++)
                 {
                     // If there's no token, the chain is broken!
                     if (!_board[col, row].HasValue)
                     {
-                        break;
+                        chainLength = 0;
+                        continue;
                     }
 
                     // Different player found; the chain is broken!
                     if (_board[col, row].Value != firstToken)
                     {
-                        break;
+                        chainLength = 0;
+                        continue;
                     }
                 }
 
-                // We checked the whole column and didn't find a break -- WINNER!
-                if (row == Rows)
+                // We checked the whole row and didn't find a break -- WINNER!
+                if (chainLength >= WinningChainLength)
                 {
                     return _board[col, Rows].Value;
                 }
