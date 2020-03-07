@@ -112,8 +112,8 @@ namespace ConnectFour.DataLayer.Models
             for (int row = 0; row < Rows; row++)
             {
                 var firstToken = _board[0, row];
-                int chainLength = 0;
-                for (int col = 1; col < Columns && chainLength <= WinningChainLength; col++, chainLength++)
+                int chainLength = 1;
+                for (int col = 1; col < Columns && chainLength < WinningChainLength; col++, chainLength++)
                 {
                     // If there's no token, the chain is broken!
                     if (!_board[col, row].HasValue)
@@ -122,10 +122,11 @@ namespace ConnectFour.DataLayer.Models
                         continue;
                     }
 
-                    // Different player found; the chain is broken!
+                    // Different player found; the chain is reset!
                     if (_board[col, row].Value != firstToken)
                     {
-                        chainLength = 0;
+                        chainLength = 1;
+                        firstToken = _board[col, row].Value;
                         continue;
                     }
                 }
@@ -133,7 +134,7 @@ namespace ConnectFour.DataLayer.Models
                 // We checked the whole row and didn't find a break -- WINNER!
                 if (chainLength >= WinningChainLength)
                 {
-                    return _board[Columns, row].Value;
+                    return firstToken.Value;
                 }
             }
 
@@ -150,8 +151,8 @@ namespace ConnectFour.DataLayer.Models
             for (int col = 0; col < Columns; col++)
             {
                 var firstToken = _board[col, 0];
-                int chainLength = 0;
-                for (int row = 1; row < Rows && chainLength <= WinningChainLength; row++, chainLength++)
+                int chainLength = firstToken.HasValue ? 1 : 0;
+                for (int row = 1; row < Rows && chainLength < WinningChainLength; row++, chainLength++)
                 {
                     // If there's no token, the chain is broken!
                     if (!_board[col, row].HasValue)
@@ -160,10 +161,11 @@ namespace ConnectFour.DataLayer.Models
                         continue;
                     }
 
-                    // Different player found; the chain is broken!
+                    // Different player found; the chain is reset!
                     if (_board[col, row].Value != firstToken)
                     {
-                        chainLength = 0;
+                        chainLength = 1;
+                        firstToken = _board[col, row].Value;
                         continue;
                     }
                 }
@@ -171,7 +173,7 @@ namespace ConnectFour.DataLayer.Models
                 // We checked the whole row and didn't find a break -- WINNER!
                 if (chainLength >= WinningChainLength)
                 {
-                    return _board[col, Rows].Value;
+                    return firstToken.Value;
                 }
             }
 
@@ -185,7 +187,68 @@ namespace ConnectFour.DataLayer.Models
         /// <returns>The player ID if a winner is found; otherwise NO_WINNER</returns>
         private int CheckDiagonalWin()
         {
-            throw new NotImplementedException();
+            var minDimension = (Rows < Columns) ? Rows : Columns;
+
+            // Check left-to-right upward diagonal 
+            {
+                var firstToken = _board[0, 0];
+                int chainLength = firstToken.HasValue ? 1 : 0;
+                for (int i = 1; i < minDimension && chainLength < WinningChainLength; i++, chainLength++)
+                {
+                    // If there's no token, the chain is broken!
+                    if (!_board[i, i].HasValue)
+                    {
+                        chainLength = 0;
+                        continue;
+                    }
+
+                    // Different player found; the chain is reset!
+                    if (_board[i, i].Value != firstToken)
+                    {
+                        chainLength = 1;
+                        firstToken = _board[i, i].Value;
+                        continue;
+                    }
+                }
+
+                // We checked the whole diagonal and didn't find a break -- WINNER!
+                if (chainLength >= WinningChainLength)
+                {
+                    return firstToken.Value;
+                }
+            }
+
+            // Check left-to-right downward diagonal 
+            {
+                var firstToken = _board[minDimension - 1, minDimension - 1];
+                int chainLength = firstToken.HasValue ? 1 : 0;
+                for (int i = minDimension - 1; i >= 0 && chainLength < WinningChainLength; i--, chainLength++)
+                {
+                    // If there's no token, the chain is broken!
+                    if (!_board[i, i].HasValue)
+                    {
+                        chainLength = 0;
+                        continue;
+                    }
+
+                    // Different player found; the chain is reset!
+                    if (_board[i, i].Value != firstToken)
+                    {
+                        chainLength = 1;
+                        firstToken = _board[i, i].Value;
+                        continue;
+                    }
+                }
+
+                // We checked the whole diagonal and didn't find a break -- WINNER!
+                if (chainLength >= WinningChainLength)
+                {
+                    return firstToken.Value;
+                }
+            }
+
+            // Checked both diagonals and found nothing
+            return NO_WINNER;
         }
 
         /// <summary>
@@ -236,7 +299,7 @@ namespace ConnectFour.DataLayer.Models
             // Check the top row of every column -- if they all have a value, then the board is full
             for (int col = 0; col < Columns; col++)
             {
-                if (!_board[col, Rows].HasValue)
+                if (!_board[col, Rows - 1].HasValue)
                 {
                     return false;
                 }
