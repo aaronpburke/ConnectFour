@@ -1,25 +1,34 @@
-# IO.Swagger - ASP.NET Core 2.0 Server
 
-At-home interview implementation of \"98Point6 Drop-Token\" homework assignment
+# Connect Four - ASP.NET Core 3.1 Server
 
-## Run
+Back-end API server for a \"Connect Four\"-style game.
 
-Linux/OS X:
+## How to Build
+
+### Linux/OS X
 
 ```
 sh build.sh
 ```
 
-Windows:
+### Windows
 
 ```
 build.bat
 ```
 
-## Run in Docker
+### Docker
 
 ```
-cd src/IO.Swagger
-docker build -t io.swagger .
-docker run -p 5000:5000 io.swagger
+cd src
+docker build -t connectfour.api .
+docker run -p 5000:5000 connectfour.api
 ```
+
+## API documentation
+
+API documentation can be found by running the project and navigating to /swagger of the server root. The API follows the OpenAPI v3 specification. The OpenAPI document can be found at /swagger/1.0.0/swagger.json and is a dynamically created document. Client libraries can be generated from this specification using any OpenAPI-compatible tool, such as the [Swagger Editor](https://editor.swagger.io/).
+
+## Known Issues
+
+ - Database layer implementation may not allow for clustered application deployment due to a bug in internal caching optimizations.
