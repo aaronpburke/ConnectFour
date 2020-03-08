@@ -123,7 +123,6 @@ namespace ConnectFour.Api.Controllers
                 var gameMove = new GameMove()
                 {
                     Column = newGameMove.Column,
-                    Player = playerName,
                     Type = newGameMove.Type
                 };
                 

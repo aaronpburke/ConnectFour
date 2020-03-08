@@ -29,6 +29,12 @@ namespace ConnectFour.DataLayer.Models
         public int GameBoardId { get; set; }
 
         /// <summary>
+        /// Foreign key back to the player who played the move
+        /// </summary>
+        [Required]
+        public int PlayerId { get; set; }
+
+        /// <summary>
         /// Sequence number of the move within its parent <seealso cref="Game"/>
         /// </summary>
         public int MoveId { get; set; }
@@ -56,12 +62,6 @@ namespace ConnectFour.DataLayer.Models
         /// </summary>
         [Required]
         public MoveType Type { get; set; }
-
-        /// <summary>
-        /// Player name who made the move
-        /// </summary>
-        [Required]
-        public string Player { get; set; }
 
         /// <summary>
         /// The column the token was dropped into, if <see cref="Type"/> is <see cref="MoveType.MOVE"/>
