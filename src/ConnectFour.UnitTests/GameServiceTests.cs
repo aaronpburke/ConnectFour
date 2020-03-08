@@ -1,4 +1,5 @@
-﻿using ConnectFour.ServiceLayer.GameService;
+﻿using ConnectFour.DataLayer.Models;
+using ConnectFour.ServiceLayer.GameService;
 using FluentAssertions;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -63,13 +64,20 @@ namespace ConnectFour.UnitTests
             using (var context = DbTestHelper.GetNewContext())
             {
                 var sut = new GameService(context, new ServiceLayer.Models.GameOptions());
-                var createdGameId = sut.CreateNewGame(new NewGameDetails()
+                NewGameDetails newGameDetails = new NewGameDetails()
                 {
                     Columns = 4,
                     Rows = 4,
                     Players = new List<string>() { "Player1", "Player2" }
-                });
+                };
+                var createdGameId = sut.CreateNewGame(newGameDetails);
                 createdGameId.Should().NotBeNullOrEmpty();
+
+                var details = sut.GetGameDetails(createdGameId);
+                details.Should().NotBeNull();
+                details.Players.Should().BeEquivalentTo(newGameDetails.Players);
+                details.State.Should().Be(Game.GameState.IN_PROGRESS);
+                details.Winner.Should().BeNullOrEmpty();
             }
         }
     }
