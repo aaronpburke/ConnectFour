@@ -25,9 +25,12 @@ namespace ConnectFour.DataLayer.Repositories.GameRepository
                 return null;
             }
 
-            Context.Entry(game)
+            if (game.Players == null)
+            {
+                Context.Entry(game)
                 .Collection(g => g.Players)
                 .Load();
+            }
 
             return game;
         }
@@ -45,24 +48,34 @@ namespace ConnectFour.DataLayer.Repositories.GameRepository
             {
                 return null;
             }
+
             // TODO: How to optimize this into a single query in EF?
 
-            Context.Entry(game)
+            if (game.Players == null)
+            {
+                Context.Entry(game)
+                        .Collection(g => g.Players)
+                        .Load();
+            }
+            
+            if (game.GameBoard == null)
+            {
+                Context.Entry(game)
                 .Reference(g => g.GameBoard)
                 .Load();
+            }
 
-            Context.Entry(game)
-                .Collection(g => g.Players)
-                .Load();
-
-            Context.Entry(game.GameBoard)
-                .Collection(gb => gb.Moves)
-                .Load();
-
-            // Play each move to load in-memory state
-            foreach (var move in game.GameBoard.Moves)
+            if (game.GameBoard.Moves == null)
             {
-                game.GameBoard.DropToken(move.Column, move.PlayerId);
+                Context.Entry(game.GameBoard)
+                    .Collection(gb => gb.Moves)
+                    .Load();
+
+                // Play each move to load in-memory state
+                foreach (var move in game.GameBoard.Moves)
+                {
+                    game.GameBoard.DropToken(move.Column, move.PlayerId);
+                }
             }
 
             return game;
