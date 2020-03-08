@@ -105,7 +105,7 @@ namespace ConnectFour.Api.Controllers
         /// </summary>
         /// <param name="gameId">ID of the game to play move on</param>
         /// <param name="playerName">Name of the player playing the move</param>
-        /// <param name="newGameMove">Move to play</param>
+        /// <param name="column">Column in which to play the token</param>
         /// <response code="200">Returns the new move.</response>
         /// <response code="400">Malformed input. Illegal move.</response>
         /// <response code="404">Game not found or player is not a part of it.</response>
@@ -115,15 +115,15 @@ namespace ConnectFour.Api.Controllers
         [ValidateModelState]
         [SwaggerOperation("PlayMove")]
         [SwaggerResponse(statusCode: 200, type: typeof(GameMove), description: "Returns the new move.")]
-        public virtual IActionResult PlayMove([FromRoute][Required]string gameId, [FromRoute][Required]string playerName, [FromBody][Required]GameMoveDetails newGameMove)
+        public virtual IActionResult PlayMove([FromRoute][Required]string gameId, [FromRoute][Required]string playerName, [FromBody][Required]int column)
         {
             try
             {
                 var gameMove = new GameMoveDetails()
                 {
                     Player = playerName,
-                    Column = newGameMove.Column,
-                    Type = newGameMove.Type
+                    Column = column,
+                    Type = GameMove.MoveType.MOVE
                 };
 
                 var move = _gameService.PlayMove(gameId, gameMove);
