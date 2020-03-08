@@ -111,24 +111,28 @@ namespace ConnectFour.DataLayer.Models
             // Horizontal check
             for (int row = 0; row < Rows; row++)
             {
-                var firstToken = _board[0, row];
-                int chainLength = 1;
-                for (int col = 1; col < Columns && chainLength < WinningChainLength; col++, chainLength++)
+                int? firstToken = null;
+                int chainLength = 0;
+                for (int col = 0; col < Columns && chainLength < WinningChainLength; col++)
                 {
+                    var next = _board[col, row];
                     // If there's no token, the chain is broken!
-                    if (!_board[col, row].HasValue)
+                    if (!next.HasValue)
                     {
                         chainLength = 0;
                         continue;
                     }
 
                     // Different player found; the chain is reset!
-                    if (_board[col, row].Value != firstToken)
+                    if (next.Value != firstToken)
                     {
                         chainLength = 1;
-                        firstToken = _board[col, row].Value;
+                        firstToken = next.Value;
                         continue;
                     }
+
+                    // Getting here means the chain continues
+                    chainLength++;
                 }
 
                 // We checked the whole row and didn't find a break -- WINNER!
@@ -150,24 +154,29 @@ namespace ConnectFour.DataLayer.Models
         {
             for (int col = 0; col < Columns; col++)
             {
-                var firstToken = _board[col, 0];
-                int chainLength = firstToken.HasValue ? 1 : 0;
-                for (int row = 1; row < Rows && chainLength < WinningChainLength; row++, chainLength++)
+                int? firstToken = null;
+                int chainLength = 0;
+                for (int row = 0; row < Rows && chainLength < WinningChainLength; row++)
                 {
+                    var next = _board[col, row];
                     // If there's no token, the chain is broken!
-                    if (!_board[col, row].HasValue)
+                    if (!next.HasValue)
                     {
                         chainLength = 0;
+                        firstToken = null;
                         continue;
                     }
 
                     // Different player found; the chain is reset!
-                    if (_board[col, row].Value != firstToken)
+                    if (next.Value != firstToken)
                     {
                         chainLength = 1;
-                        firstToken = _board[col, row].Value;
+                        firstToken = next.Value;
                         continue;
                     }
+
+                    // Getting here means the chain continues
+                    chainLength++;
                 }
 
                 // We checked the whole row and didn't find a break -- WINNER!
@@ -191,24 +200,29 @@ namespace ConnectFour.DataLayer.Models
 
             // Check left-to-right upward diagonal 
             {
-                var firstToken = _board[0, 0];
-                int chainLength = firstToken.HasValue ? 1 : 0;
-                for (int i = 1; i < minDimension && chainLength < WinningChainLength; i++, chainLength++)
+                int? firstToken = null;
+                int chainLength = 0;
+                for (int i = 0; i < minDimension && chainLength < WinningChainLength; i++)
                 {
+                    var next = _board[i, i];
                     // If there's no token, the chain is broken!
-                    if (!_board[i, i].HasValue)
+                    if (!next.HasValue)
                     {
                         chainLength = 0;
+                        firstToken = null;
                         continue;
                     }
 
                     // Different player found; the chain is reset!
-                    if (_board[i, i].Value != firstToken)
+                    if (next.Value != firstToken)
                     {
                         chainLength = 1;
-                        firstToken = _board[i, i].Value;
+                        firstToken = next.Value;
                         continue;
                     }
+
+                    // Getting here means the chain continues
+                    chainLength++;
                 }
 
                 // We checked the whole diagonal and didn't find a break -- WINNER!
@@ -220,24 +234,29 @@ namespace ConnectFour.DataLayer.Models
 
             // Check left-to-right downward diagonal 
             {
-                var firstToken = _board[minDimension - 1, minDimension - 1];
-                int chainLength = firstToken.HasValue ? 1 : 0;
-                for (int i = minDimension - 1; i >= 0 && chainLength < WinningChainLength; i--, chainLength++)
+                int? firstToken = null;
+                int chainLength = 0;
+                for (int i = 0; i < minDimension && chainLength < WinningChainLength; i++)
                 {
+                    var next = _board[(Columns - i - 1), i];
                     // If there's no token, the chain is broken!
-                    if (!_board[i, i].HasValue)
+                    if (!next.HasValue)
                     {
                         chainLength = 0;
+                        firstToken = null;
                         continue;
                     }
 
                     // Different player found; the chain is reset!
-                    if (_board[i, i].Value != firstToken)
+                    if (next.Value != firstToken)
                     {
                         chainLength = 1;
-                        firstToken = _board[i, i].Value;
+                        firstToken = next.Value;
                         continue;
                     }
+
+                    // Getting here means the chain continues
+                    chainLength++;
                 }
 
                 // We checked the whole diagonal and didn't find a break -- WINNER!

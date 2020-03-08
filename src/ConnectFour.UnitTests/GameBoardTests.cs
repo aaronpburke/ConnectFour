@@ -92,5 +92,106 @@ namespace ConnectFour.UnitTests
             gameBoard.HasWinner().Should().BeTrue();
             gameBoard.GetWinner().Should().Be(0);
         }
+
+        [Fact]
+        public void UpRightDiagonalWin()
+        {
+            const int rows = 4;
+            const int columns = 4;
+            const int chainLength = 4;
+            var gameBoard = new GameBoard(rows: rows, columns: columns, winningChainLength: chainLength);
+
+            // Make the board look like this:
+            /*
+            . . . 0
+            . . 0 1
+            . 0 1 1
+            0 1 1 1
+            */
+            // Column 0
+            {
+                gameBoard.DropToken(0, 0).Should().BeTrue();
+                gameBoard.HasWinner().Should().BeFalse();
+            }
+            // Column 1
+            {
+                gameBoard.DropToken(1, 1).Should().BeTrue();
+                gameBoard.HasWinner().Should().BeFalse();
+                gameBoard.DropToken(1, 0).Should().BeTrue();                
+            }
+            // Column 2
+            {
+                gameBoard.DropToken(2, 1).Should().BeTrue();
+                gameBoard.HasWinner().Should().BeFalse();
+                gameBoard.DropToken(2, 1).Should().BeTrue();
+                gameBoard.HasWinner().Should().BeFalse();
+                gameBoard.DropToken(2, 0).Should().BeTrue();
+                gameBoard.HasWinner().Should().BeFalse();
+            }
+            // Column 3
+            {
+                gameBoard.DropToken(3, 1).Should().BeTrue();
+                gameBoard.HasWinner().Should().BeFalse();
+                gameBoard.DropToken(3, 1).Should().BeTrue();
+                gameBoard.HasWinner().Should().BeFalse();
+                gameBoard.DropToken(3, 1).Should().BeTrue();
+                gameBoard.HasWinner().Should().BeFalse();
+            }
+
+            // Play the winning token
+            gameBoard.DropToken(3, 0).Should().BeTrue();
+            gameBoard.HasWinner().Should().BeTrue();
+            gameBoard.GetWinner().Should().Be(0);
+        }
+
+        [Fact]
+        public void DownRightDiagonalWin()
+        {
+            const int rows = 4;
+            const int columns = 4;
+            const int chainLength = 4;
+            var gameBoard = new GameBoard(rows: rows, columns: columns, winningChainLength: chainLength);
+
+            // Make the board look like this:
+            /*
+            0 . . .
+            1 0 . .
+            1 1 0 .
+            1 1 1 0
+            */
+            // Column 0
+            {
+                gameBoard.DropToken(0, 1).Should().BeTrue();
+                gameBoard.HasWinner().Should().BeFalse();
+                gameBoard.DropToken(0, 1).Should().BeTrue();
+                gameBoard.HasWinner().Should().BeFalse();
+                gameBoard.DropToken(0, 1).Should().BeTrue();
+                gameBoard.HasWinner().Should().BeFalse();
+                gameBoard.DropToken(0, 0).Should().BeTrue();
+                gameBoard.HasWinner().Should().BeFalse();
+            }
+            // Column 1
+            {
+                gameBoard.DropToken(1, 1).Should().BeTrue();
+                gameBoard.HasWinner().Should().BeFalse();
+                gameBoard.DropToken(1, 1).Should().BeTrue();
+                gameBoard.HasWinner().Should().BeFalse();
+                gameBoard.DropToken(1, 0).Should().BeTrue();
+                gameBoard.HasWinner().Should().BeFalse();
+            }
+            // Column 2
+            {
+                gameBoard.DropToken(2, 1).Should().BeTrue();
+                gameBoard.HasWinner().Should().BeFalse();
+                gameBoard.DropToken(2, 0).Should().BeTrue();
+                gameBoard.HasWinner().Should().BeFalse();
+            }
+            // Column 3
+            {
+                // Play the winning token
+                gameBoard.DropToken(3, 0).Should().BeTrue();
+                gameBoard.HasWinner().Should().BeTrue();
+            }
+        }
     }
 }
