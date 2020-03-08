@@ -58,7 +58,7 @@ namespace ConnectFour.UnitTests
         */
 
         [Fact]
-        private void CreateGame()
+        public void CreateGame()
         {
             using (var context = DbTestHelper.GetNewContext())
             {
