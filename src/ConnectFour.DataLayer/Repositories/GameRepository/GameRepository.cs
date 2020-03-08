@@ -1,5 +1,6 @@
 ﻿using ConnectFour.DataLayer.Models;
 using System;
+using System.Linq;
 
 namespace ConnectFour.DataLayer.Repositories.GameRepository
 {
@@ -46,33 +47,27 @@ namespace ConnectFour.DataLayer.Repositories.GameRepository
             {
                 return null;
             }
+            // TODO: How to optimize this into a single query in EF?
 
             Context.Entry(game)
                 .Reference(g => g.GameBoard)
                 .Load();
 
-            return game;
-        }
+            Context.Entry(game)
+                .Collection(g => g.Players)
+                .Load();
 
-        /// <summary>
-        /// Loads <see cref="GameMove"/> information into the <paramref name="gameBoard"/> from the backing store.
-        /// </summary>
-        /// <param name="gameBoard"><see cref="GameBoard"/> for which to load the game moves</param>
-        /// <returns><see cref="GameBoard"/> with the <seealso cref="GameBoard"/> information loaded.</returns>
-        // TODO: Can this be a GameBoard.WithMoves extension method instead of a method on the repository? This would be more natural and allow easy chains:
-        // _repository.GetById(id).WithBoard().WithMoves() /* With...() */;
-        public GameBoard LoadGameMoves(GameBoard gameBoard)
-        {
-            if (gameBoard == null)
-            {
-                throw new ArgumentNullException("Game board is not loaded; call LoadGameBoard(game) first!");
-            }
-
-            Context.Entry(gameBoard)
+            Context.Entry(game.GameBoard)
                 .Collection(gb => gb.Moves)
                 .Load();
 
-            return gameBoard;
+            // Play each move to load in-memory state
+            foreach (var move in game.GameBoard.Moves)
+            {
+                game.GameBoard.DropToken(move.Column, move.PlayerId);
+            }
+
+            return game;
         }
     }
 }
