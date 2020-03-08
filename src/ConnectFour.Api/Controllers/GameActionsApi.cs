@@ -129,7 +129,7 @@ namespace ConnectFour.Api.Controllers
             }
             catch (PlayerTurnException)
             {
-                return BadRequest();
+                return Conflict();
             }
             catch (PlayerNotFoundException)
             {
@@ -138,7 +138,7 @@ namespace ConnectFour.Api.Controllers
             // InvalidOperationException means the play was invalid
             catch (InvalidOperationException)
             {
-                return Conflict();
+                return BadRequest();
             }
         }
 
