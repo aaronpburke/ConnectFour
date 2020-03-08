@@ -160,21 +160,16 @@ namespace ConnectFour.ServiceLayer.GameService
         }
 
         /// <inheritdoc />
-        public GameMove PlayMove(string gameId, string playerName, GameMove move)
+        public GameMove PlayMove(string gameId, GameMoveDetails newMove)
         {
             if (string.IsNullOrWhiteSpace(gameId))
             {
                 throw new ArgumentException(nameof(gameId));
             }
 
-            if (string.IsNullOrWhiteSpace(playerName))
+            if (newMove == null)
             {
-                throw new ArgumentException(nameof(playerName));
-            }
-
-            if (move == null)
-            {
-                throw new ArgumentNullException(nameof(move));
+                throw new ArgumentNullException(nameof(newMove));
             }
 
             var game = GetById(gameId);
@@ -183,9 +178,9 @@ namespace ConnectFour.ServiceLayer.GameService
                 return null;
             }
 
-            if (GetActivePlayer(game).Name != playerName)
+            if (GetActivePlayer(game).Name != newMove.Player)
             {
-                throw new PlayerTurnException($"It is not {playerName}'s turn");
+                throw new PlayerTurnException($"It is not {newMove.Player}'s turn");
             }
 
             if (GetGameState(game) == Game.GameState.DONE)
@@ -193,20 +188,26 @@ namespace ConnectFour.ServiceLayer.GameService
                 throw new InvalidOperationException($"Game is finished! Cannot play new moves.");
             }
 
-            var player = game.Players.SingleOrDefault(p => p.Name == playerName);
+            var player = game.Players.SingleOrDefault(p => p.Name == newMove.Player);
             if (player == null)
             {
-                throw new PlayerNotFoundException($"{playerName} does not exist in game {gameId}");
+                throw new PlayerNotFoundException($"{newMove.Player} does not exist in game {gameId}");
             }
 
-            if (!game.GameBoard.DropToken(move.Column, player.Id))
+            if (!game.GameBoard.DropToken(newMove.Column, player.Id))
             {
-                throw new InvalidOperationException($"Could not place token in column {move.Column}; column is full");
+                throw new InvalidOperationException($"Could not place token in column {newMove.Column}; column is full");
             }
 
-            move.PlayerId = player.Id;
+            var move = new GameMove()
+            {
+                Column = newMove.Column,
+                PlayerId = player.Id,
+                MoveId = game.GameBoard.Moves.Count() + 1, // TODO: This smells inefficient - is there a better way than re-counting? Check the generated SQL.
+                Type = newMove.Type
+            };
+
             game.GameBoard.Moves.Add(move);
-            move.MoveId = game.GameBoard.Moves.Count(); // TODO: This smells inefficient - is there a better way than re-counting? Check the generated SQL.
             game.State = GetGameState(game);
 
             Context.SaveChanges();  // TODO: Leaky abstraction; move to data layer?

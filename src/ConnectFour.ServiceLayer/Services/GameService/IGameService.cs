@@ -52,10 +52,9 @@ namespace ConnectFour.ServiceLayer.GameService
         /// Plays a <paramref name="move"/> within the specified <paramref name="gameId"/>.
         /// </summary>
         /// <param name="gameId">Game ID to play the move within</param>
-        /// <param name="playerName">Name of the player playing the move</param>
         /// <param name="move">New move to play</param>
         /// <returns>The <paramref name="move"/> with its sequence ID assigned</returns>
-        GameMove PlayMove(string gameId, string playerName, GameMove move);
+        GameMove PlayMove(string gameId, GameMoveDetails move);
 
         /// <summary>
         /// Removes the <paramref name="playerName"/> from the specified <paramref name="gameId"/>.

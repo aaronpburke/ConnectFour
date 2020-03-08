@@ -119,13 +119,14 @@ namespace ConnectFour.Api.Controllers
         {
             try
             {
-                var gameMove = new GameMove()
+                var gameMove = new GameMoveDetails()
                 {
+                    Player = playerName,
                     Column = newGameMove.Column,
                     Type = newGameMove.Type
                 };
 
-                var move = _gameService.PlayMove(gameId, playerName, gameMove);
+                var move = _gameService.PlayMove(gameId, gameMove);
                 if (move == null)
                 {
                     return NotFound();

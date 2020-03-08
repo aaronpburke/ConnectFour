@@ -144,7 +144,7 @@ namespace ConnectFour.UnitTests
 
                 // Valid play
                 {
-                    var move = sut.PlayMove(createdGameId, "Player1", new GameMove() { Column = 0, Type = GameMove.MoveType.MOVE });
+                    var move = sut.PlayMove(createdGameId, new GameMoveDetails() { Player = "Player1", Column = 0, Type = GameMove.MoveType.MOVE });
                     move.Should().NotBeNull();
                     move.MoveId.Should().Be(1);
                     move.Type.Should().Be(GameMove.MoveType.MOVE);
@@ -153,19 +153,19 @@ namespace ConnectFour.UnitTests
 
                 // Invalid play -- trying to play again and skipping Player2
                 {
-                    Action act = () => sut.PlayMove(createdGameId, "Player1", new GameMove() { Column = 0, Type = GameMove.MoveType.MOVE });
+                    Action act = () => sut.PlayMove(createdGameId, new GameMoveDetails() { Player = "Player1", Column = 0, Type = GameMove.MoveType.MOVE });
                     act.Should().Throw<PlayerTurnException>();
                 }
 
                 // Invalid play -- Player isn't in this game
                 {
-                    Action act = () => sut.PlayMove(createdGameId, "Invalid Player", new GameMove() { Column = 0, Type = GameMove.MoveType.MOVE });
+                    Action act = () => sut.PlayMove(createdGameId, new GameMoveDetails() { Player = "Invalid Player", Column = 0, Type = GameMove.MoveType.MOVE });
                     act.Should().Throw<PlayerTurnException>();
                 }
 
                 // Valid play
                 {
-                    var move = sut.PlayMove(createdGameId, "Player2", new GameMove() { Column = 0, Type = GameMove.MoveType.MOVE });
+                    var move = sut.PlayMove(createdGameId, new GameMoveDetails() { Player = "Player2", Column = 0, Type = GameMove.MoveType.MOVE });
                     move.Should().NotBeNull();
                     move.MoveId.Should().Be(2);
                     move.Type.Should().Be(GameMove.MoveType.MOVE);
@@ -194,7 +194,7 @@ namespace ConnectFour.UnitTests
                 {
                     var column = i % newGameDetails.Players.Count;
                     var playerName = $"Player{column + 1}";
-                    var move = sut.PlayMove(createdGameId, playerName, new GameMove() { Column = column, Type = GameMove.MoveType.MOVE });
+                    var move = sut.PlayMove(createdGameId, new GameMoveDetails() { Player = playerName, Column = column, Type = GameMove.MoveType.MOVE });
                     move.Should().NotBeNull();
                     move.MoveId.Should().Be(i + 1);
                     move.Type.Should().Be(GameMove.MoveType.MOVE);
@@ -219,7 +219,7 @@ namespace ConnectFour.UnitTests
 
                 // Winning play - Player 1 wins!
                 {
-                    var move = sut.PlayMove(createdGameId, "Player1", new GameMove() { Column = 0, Type = GameMove.MoveType.MOVE });
+                    var move = sut.PlayMove(createdGameId, new GameMoveDetails() { Player = "Player1", Column = 0, Type = GameMove.MoveType.MOVE });
                     move.Should().NotBeNull();
                     move.MoveId.Should().Be((newGameDetails.Rows * newGameDetails.Players.Count) - 1);
                     move.Type.Should().Be(GameMove.MoveType.MOVE);
