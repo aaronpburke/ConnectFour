@@ -1,8 +1,5 @@
 ﻿using ConnectFour.DataLayer.Models;
 using FluentAssertions;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace ConnectFour.UnitTests
@@ -13,7 +10,7 @@ namespace ConnectFour.UnitTests
         public void FullColumnRejectsMove()
         {
             var gameBoard = new GameBoard(rows: 4, columns: 4, winningChainLength: 4);
-            
+
             for (int play = 0; play < 4; play++)
             {
                 gameBoard.DropToken(column: 0, player: 0).Should().BeTrue();
@@ -117,7 +114,7 @@ namespace ConnectFour.UnitTests
             {
                 gameBoard.DropToken(1, 1).Should().BeTrue();
                 gameBoard.HasWinner().Should().BeFalse();
-                gameBoard.DropToken(1, 0).Should().BeTrue();                
+                gameBoard.DropToken(1, 0).Should().BeTrue();
             }
             // Column 2
             {

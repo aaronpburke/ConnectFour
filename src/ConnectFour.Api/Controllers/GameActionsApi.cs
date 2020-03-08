@@ -124,7 +124,7 @@ namespace ConnectFour.Api.Controllers
                     Column = newGameMove.Column,
                     Type = newGameMove.Type
                 };
-                
+
                 var move = _gameService.PlayMove(gameId, playerName, gameMove);
                 if (move == null)
                 {

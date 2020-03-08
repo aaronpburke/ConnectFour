@@ -1,6 +1,4 @@
 ﻿using ConnectFour.DataLayer.Models;
-using System;
-using System.Linq;
 
 namespace ConnectFour.DataLayer.Repositories.GameRepository
 {
