@@ -200,16 +200,28 @@ namespace ConnectFour.UnitTests
                     move.Type.Should().Be(GameMove.MoveType.MOVE);
                     move.Column.Should().Be(column);
 
-                    var details = sut.GetGameDetails(createdGameId);
-                    details.Should().NotBeNull();
-                    details.State.Should().Be(Game.GameState.IN_PROGRESS);
+                    // Verify the move
+                    {
+                        var moveDetails = sut.GetMove(createdGameId, i);
+                        moveDetails.Should().NotBeNull();
+                        moveDetails.Player.Should().Be(playerName);
+                        moveDetails.Type.Should().Be(GameMove.MoveType.MOVE);
+                        moveDetails.Column.Should().Be(column);
+                    }
+
+                    // Verify the game does not yet have a winner
+                    {
+                        var details = sut.GetGameDetails(createdGameId);
+                        details.Should().NotBeNull();
+                        details.State.Should().Be(Game.GameState.IN_PROGRESS);
+                    }
                 }
 
                 // Winning play - Player 1 wins!
                 {
                     var move = sut.PlayMove(createdGameId, "Player1", new GameMove() { Column = 0, Type = GameMove.MoveType.MOVE });
                     move.Should().NotBeNull();
-                    //move.MoveId.Should().Be(1);
+                    move.MoveId.Should().Be((newGameDetails.Rows * newGameDetails.Players.Count) - 1);
                     move.Type.Should().Be(GameMove.MoveType.MOVE);
                     move.Column.Should().Be(0);
 
@@ -218,6 +230,12 @@ namespace ConnectFour.UnitTests
                     details.State.Should().Be(Game.GameState.DONE);
                     details.Winner.Should().Be("Player1");
                 }
+
+                // Get all the moves
+                var allMoves = sut.GetMoves(createdGameId);
+                allMoves.Should().NotBeNull();
+                allMoves.Should().HaveCount((newGameDetails.Rows * newGameDetails.Players.Count) - 1);  // First row is full, second row has all but one
+                allMoves.Should().OnlyHaveUniqueItems();
             }
         }
     }
