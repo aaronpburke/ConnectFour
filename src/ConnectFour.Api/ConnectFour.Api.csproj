@@ -32,9 +32,5 @@
     <ProjectReference Include="..\ConnectFour.ServiceLayer\ConnectFour.ServiceLayer.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Models\DTOs\" />
-  </ItemGroup>
-
 
 </Project>
