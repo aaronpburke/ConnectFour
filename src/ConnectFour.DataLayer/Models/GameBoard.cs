@@ -71,6 +71,11 @@ namespace ConnectFour.DataLayer.Models
                 throw new ArgumentOutOfRangeException(nameof(columns));
             }
 
+            if (winningChainLength <= 0 || winningChainLength > rows || winningChainLength > columns)
+            {
+                throw new ArgumentOutOfRangeException(nameof(winningChainLength));
+            }
+
             Rows = rows;
             Columns = columns;
 
