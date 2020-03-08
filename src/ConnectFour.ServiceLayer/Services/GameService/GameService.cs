@@ -211,8 +211,6 @@ namespace ConnectFour.ServiceLayer.GameService
 
             Context.SaveChanges();  // TODO: Leaky abstraction; move to data layer?
 
-            // TODO: Check if winner and update game state
-
             return move;
         }
 
@@ -230,8 +228,6 @@ namespace ConnectFour.ServiceLayer.GameService
 
             LoadPlayers(game);
             LoadGameBoard(game);
-
-            // TODO: Check game state
 
             return game.Players.ElementAt(game.GameBoard.Moves.Count() % game.Players.Count());
         }
