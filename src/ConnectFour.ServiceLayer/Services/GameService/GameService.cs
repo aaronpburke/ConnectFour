@@ -180,11 +180,17 @@ namespace ConnectFour.ServiceLayer.GameService
                 throw new PlayerTurnException($"It is not {playerName}'s turn");
             }
 
+            if (GetGameState(game) == Game.GameState.DONE)
+            {
+                throw new InvalidOperationException($"Game is finished! Cannot play new moves.");
+            }
+
             var player = game.Players.SingleOrDefault(p => p.Name == playerName);
             if (player == null)
             {
                 throw new PlayerNotFoundException($"{playerName} does not exist in game {gameId}");
             }
+
             if (!game.GameBoard.DropToken(move.Column, player.Id))
             {
                 throw new InvalidOperationException($"Could not place token in column {move.Column}; column is full");
