@@ -11,6 +11,7 @@ using ConnectFour.Api.Attributes;
 using ConnectFour.ServiceLayer.GameService;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -85,8 +86,15 @@ namespace ConnectFour.Api.Controllers
         [SwaggerResponse(statusCode: 200, type: typeof(string), description: "Returns the new game resource.")]
         public virtual IActionResult StartNewGame([FromBody]NewGameDetails newGameDetails)
         {
-            var newGameId = _gameService.CreateNewGame(newGameDetails);
-            return CreatedAtAction(nameof(GetGame), new { gameId = newGameId }, newGameId);
+            try
+            {
+                var newGameId = _gameService.CreateNewGame(newGameDetails);
+                return CreatedAtAction(nameof(GetGame), new { gameId = newGameId }, newGameId);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return BadRequest();
+            }
         }
     }
 }
