@@ -22,21 +22,21 @@ namespace ConnectFour.ServiceLayer.GameService
         GameDetails GetGameDetails(string gameId);
 
         /// <summary>
-        /// Returns the <paramref name="moveNumber"/> sequenced <see cref="GameMove"/> action of the <paramref name="gameId"/>.
+        /// Returns the <paramref name="moveNumber"/> sequenced <see cref="GameMoveDetails"/> action of the <paramref name="gameId"/>.
         /// Returns null if the game or move number does not exist.
         /// </summary>
         /// <param name="gameId">ID of the game to get the move from</param>
         /// <param name="moveNumber">Sequence number of the move to return (0-based)</param>
         /// <returns>Sequenced <see cref="GameMove"/>, or null if the game or move does not exist</returns>
-        GameMove GetMove(string gameId, int moveNumber);
+        GameMoveDetails GetMove(string gameId, int moveNumber);
 
         /// <summary>
-        /// Returns the entire sequence of <see cref="GameMove"/>s of the <paramref name="gameId"/>.
+        /// Returns the entire sequence of <see cref="GameMoveDetails"/>s of the <paramref name="gameId"/>.
         /// Returns null if the game does not exist.
         /// </summary>
         /// <param name="gameId">ID of the game to get the move from</param>
         /// <returns>Sequenced <see cref="GameMove"/>, or null if the game or move does not exist</returns>
-        IEnumerable<GameMove> GetMoves(string gameId);
+        IEnumerable<GameMoveDetails> GetMoves(string gameId);
 
         /// <summary>
         /// Returns the (sub-) sequence of <see cref="GameMove"/>s of the <paramref name="gameId"/>.
@@ -46,7 +46,7 @@ namespace ConnectFour.ServiceLayer.GameService
         /// <param name="start">Starting move to return (inclusive)</param>
         /// <param name="until">Ending move to return (inclusive)</param>
         /// <returns>Sequenced <see cref="GameMove"/>, or null if the game or move does not exist</returns>
-        IEnumerable<GameMove> GetMoves(string gameId, int start, int until);
+        IEnumerable<GameMoveDetails> GetMoves(string gameId, int start, int until);
 
         /// <summary>
         /// Plays a <paramref name="move"/> within the specified <paramref name="gameId"/>.

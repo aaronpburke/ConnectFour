@@ -56,6 +56,7 @@ namespace ConnectFour.ServiceLayer.GameService
             }
 
             LoadPlayers(game);
+            LoadGameBoard(game);
 
             var details = new GameDetails()
             {
@@ -73,7 +74,7 @@ namespace ConnectFour.ServiceLayer.GameService
         }
 
         /// <inheritdoc />
-        public GameMove GetMove(string gameId, int moveNumber)
+        public GameMoveDetails GetMove(string gameId, int moveNumber)
         {
             if (string.IsNullOrWhiteSpace(gameId))
             {
@@ -93,11 +94,17 @@ namespace ConnectFour.ServiceLayer.GameService
 
             LoadGameBoard(game);
 
-            return game.GameBoard.Moves.ElementAtOrDefault(moveNumber);
+            var move = game.GameBoard.Moves.ElementAtOrDefault(moveNumber);
+            if (move == null)
+            {
+                return null;
+            }
+
+            return GameMoveDetails.FromEntity(game, move);
         }
 
         /// <inheritdoc />
-        public IEnumerable<GameMove> GetMoves(string gameId)
+        public IEnumerable<GameMoveDetails> GetMoves(string gameId)
         {
             if (string.IsNullOrWhiteSpace(gameId))
             {
@@ -110,13 +117,13 @@ namespace ConnectFour.ServiceLayer.GameService
                 return null;
             }
 
-            LoadGameBoard(game);            
+            LoadGameBoard(game);
 
-            return game.GameBoard.Moves;
+            return game.GameBoard.Moves.Select(move => GameMoveDetails.FromEntity(game, move));
         }
 
         /// <inheritdoc />
-        public IEnumerable<GameMove> GetMoves(string gameId, int start, int until)
+        public IEnumerable<GameMoveDetails> GetMoves(string gameId, int start, int until)
         {
             if (string.IsNullOrWhiteSpace(gameId))
             {
@@ -144,11 +151,12 @@ namespace ConnectFour.ServiceLayer.GameService
                 return null;
             }
 
-            LoadGameBoard(game);            
+            LoadGameBoard(game);
 
             // TODO: This could be more efficient by only returning the desired rows from the database
             // instead of loading them all into memory, then converting to array, then segmenting it
-            return new ArraySegment<GameMove>(game.GameBoard.Moves.ToArray(), start, until - start + 1);
+            var moves = new ArraySegment<GameMove>(game.GameBoard.Moves.ToArray(), start, until - start + 1);
+            return moves.Select(move => GameMoveDetails.FromEntity(game, move));
         }
 
         /// <inheritdoc />
@@ -199,6 +207,8 @@ namespace ConnectFour.ServiceLayer.GameService
             move.PlayerId = player.Id;
             game.GameBoard.Moves.Add(move);
             move.MoveId = game.GameBoard.Moves.Count(); // TODO: This smells inefficient - is there a better way than re-counting? Check the generated SQL.
+            game.State = GetGameState(game);
+
             Context.SaveChanges();  // TODO: Leaky abstraction; move to data layer?
 
             // TODO: Check if winner and update game state
@@ -265,6 +275,13 @@ namespace ConnectFour.ServiceLayer.GameService
         /// <inheritdoc />
         public Game.GameState GetGameState(Game game)
         {
+            // If the game is already over, there's no need to load it. It can't go back to NOT over.
+            if (game.State == Game.GameState.DONE)
+            {
+                return game.State;
+            }
+
+            // Load the game board if we don't know whether the game is over yet.
             if (game.GameBoard == null)
             {
                 LoadGameBoard(game);
